@@ -5,5 +5,9 @@ import styles from './page.module.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export default function Home() {
-  return <div>Tweet</div>;
+  return (
+    <div>
+      <h1>Tweet</h1>
+    </div>
+  );
 }
