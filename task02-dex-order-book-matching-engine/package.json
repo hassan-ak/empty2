@@ -1,0 +1,26 @@
+{
+  "name": "task02-dex-order-book-matching-engine",
+  "version": "1.0.0",
+  "description": "DEX Order Book Matching Engine using Solidity and Hardhat on ZKEVM Testnet",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "DEX",
+    "Order Book",
+    "Matching Engine",
+    "Solidity",
+    "Hardhat",
+    "ZKEVM"
+  ],
+  "author": "Hassan Ali Khan",
+  "license": "ISC",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^2.0.2",
+    "hardhat": "^2.14.0"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.8.3"
+  }
+}
