@@ -217,29 +217,19 @@ contract OrderBook is EventfulOrderbook, OrderbookErrors, Ownable {
             _makerFee
         );
 
-        // if (_makeOrder.sellingToken1 == 1) {
-        //     emit OfferTake(
-        //         _makeOrder.sellingToken1,
-        //         token1,
-        //         token2,
-        //         quantity,
-        //         cost,
-        //         id,
-        //         _makeOrder.owner,
-        //         msg.sender
-        //     );
-        // } else {
-        //     emit OfferTake(
-        //         _makeOrder.sellingToken1,
-        //         token1,
-        //         token2,
-        //         cost,
-        //         quantity,
-        //         id,
-        //         _makeOrder.owner,
-        //         msg.sender
-        //     );
-        // }
+        quantity = _makeOrder.sellingToken1 == 1 ? quantity : cost;
+        cost = _makeOrder.sellingToken1 == 1 ? cost : quantity;
+
+        emit OfferTake(
+            _makeOrder.sellingToken1,
+            token1,
+            token2,
+            quantity,
+            cost,
+            id,
+            _makeOrder.owner,
+            msg.sender
+        );
 
         emit OfferUpdate(
             id,
