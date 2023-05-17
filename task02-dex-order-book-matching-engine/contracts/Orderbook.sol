@@ -169,8 +169,9 @@ contract OrderBook is EventfulOrderbook, OrderbookErrors, Ownable {
         MakeOrder memory _makeOrder = orders[id]; // Consider not using this to save gas??
         if (quantity > _makeOrder.sellingTokenAmt)
             revert QuantityExceedsOrderAmount();
-        uint128 cost = (_makeOrder.buyingTokenAmt * quantity) /
-            _makeOrder.sellingTokenAmt;
+
+        uint128 cost = ((_makeOrder.buyingTokenAmt * quantity) /
+            _makeOrder.sellingTokenAmt);
 
         uint128 _takerFee = (cost * takerFee) / 10_000; // Taker fee BPS is 0.01%
         uint128 _makerFee = (cost * makerFee) / 10_000; // Taker fee BPS is 0.01%
@@ -186,7 +187,6 @@ contract OrderBook is EventfulOrderbook, OrderbookErrors, Ownable {
             buyerReceiveToken = token2;
             buyerPayToken = token1;
         }
-
         // Take both taker and maker fee in one tx to save gas
         if (
             !buyerPayToken.transferFrom(
@@ -217,29 +217,29 @@ contract OrderBook is EventfulOrderbook, OrderbookErrors, Ownable {
             _makerFee
         );
 
-        if (_makeOrder.sellingToken1 == 1) {
-            emit OfferTake(
-                _makeOrder.sellingToken1,
-                token1,
-                token2,
-                quantity,
-                cost,
-                id,
-                _makeOrder.owner,
-                msg.sender
-            );
-        } else {
-            emit OfferTake(
-                _makeOrder.sellingToken1,
-                token1,
-                token2,
-                cost,
-                quantity,
-                id,
-                _makeOrder.owner,
-                msg.sender
-            );
-        }
+        // if (_makeOrder.sellingToken1 == 1) {
+        //     emit OfferTake(
+        //         _makeOrder.sellingToken1,
+        //         token1,
+        //         token2,
+        //         quantity,
+        //         cost,
+        //         id,
+        //         _makeOrder.owner,
+        //         msg.sender
+        //     );
+        // } else {
+        //     emit OfferTake(
+        //         _makeOrder.sellingToken1,
+        //         token1,
+        //         token2,
+        //         cost,
+        //         quantity,
+        //         id,
+        //         _makeOrder.owner,
+        //         msg.sender
+        //     );
+        // }
 
         emit OfferUpdate(
             id,
@@ -248,10 +248,10 @@ contract OrderBook is EventfulOrderbook, OrderbookErrors, Ownable {
         );
 
         if (orders[id].sellingTokenAmt == 0) {
+            emit DeleteOffer(id, _makeOrder.owner, token1, token2);
+
             delete orders[id];
             activeOrders[id] = 0;
-
-            emit DeleteOffer(id, _makeOrder.owner, token1, token2);
 
             return true;
         }
