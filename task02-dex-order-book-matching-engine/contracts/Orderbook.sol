@@ -53,6 +53,12 @@ contract OrderBook is EventfulOrderbook, OrderbookErrors, Ownable {
         makerFee = _makerFee;
     }
 
+    /// @dev Reverts transaction if an order is invalid
+    modifier isActive(uint256 id) {
+        if (!(activeOrders[id] == 1)) revert InactiveOrder();
+        _;
+    }
+
     /// @notice Returns current taker fee in BPS (0.01%)
     function getTakerFee() external view returns (uint128) {
         return takerFee;
@@ -80,6 +86,18 @@ contract OrderBook is EventfulOrderbook, OrderbookErrors, Ownable {
     /// @notice Returns the two tokens traded in the Orderbook
     function getTokenPair() external view returns (ERC20, ERC20) {
         return (token1, token2);
+    }
+
+    /// @notice Returns info on an active offer
+    function viewOffer(
+        uint256 id
+    ) external view isActive(id) returns (uint128, uint128, address, uint8) {
+        return (
+            orders[id].sellingTokenAmt,
+            orders[id].buyingTokenAmt,
+            orders[id].owner,
+            orders[id].sellingToken1
+        );
     }
 
     /// @notice Creates a maker order, sends funds from maker to escrow
@@ -138,5 +156,125 @@ contract OrderBook is EventfulOrderbook, OrderbookErrors, Ownable {
             id,
             msg.sender
         );
+    }
+
+    /// @notice Purchases quantity of token offered from orders[id]
+    /// @dev Returns whether or not the offer was deleted
+    function _buy(
+        uint256 id,
+        uint128 quantity // The quantity of the token being sold to buy
+    ) internal isActive(id) returns (bool) {
+        if (quantity == 0) revert ZeroBuyQuantity();
+
+        MakeOrder memory _makeOrder = orders[id]; // Consider not using this to save gas??
+        if (quantity > _makeOrder.sellingTokenAmt)
+            revert QuantityExceedsOrderAmount();
+        uint128 cost = (_makeOrder.buyingTokenAmt * quantity) /
+            _makeOrder.sellingTokenAmt;
+
+        uint128 _takerFee = (cost * takerFee) / 10_000; // Taker fee BPS is 0.01%
+        uint128 _makerFee = (cost * makerFee) / 10_000; // Taker fee BPS is 0.01%
+
+        ERC20 buyerReceiveToken;
+        ERC20 buyerPayToken;
+
+        if (_makeOrder.sellingToken1 == 1) {
+            // Buyer is using token2 to purchase token1
+            buyerReceiveToken = token1;
+            buyerPayToken = token2;
+        } else {
+            buyerReceiveToken = token2;
+            buyerPayToken = token1;
+        }
+
+        // Take both taker and maker fee in one tx to save gas
+        if (
+            !buyerPayToken.transferFrom(
+                msg.sender,
+                feeAddr,
+                _takerFee + _makerFee
+            )
+        ) revert LackingFundsForFees();
+        if (
+            !buyerPayToken.transferFrom(
+                msg.sender,
+                _makeOrder.owner,
+                cost - _makerFee
+            )
+        ) revert LackingFundsForTransaction();
+        if (!buyerReceiveToken.transfer(msg.sender, quantity))
+            revert EscrowToBuyerError();
+
+        orders[id].sellingTokenAmt -= quantity;
+        orders[id].buyingTokenAmt -= cost;
+
+        emit TakerFeePaid(id, msg.sender, buyerPayToken, _takerFee);
+
+        emit MakerFeePaid(
+            id,
+            _makeOrder.owner,
+            buyerPayToken, // The token the fee is paid in, not what the maker is selling
+            _makerFee
+        );
+
+        if (_makeOrder.sellingToken1 == 1) {
+            emit OfferTake(
+                _makeOrder.sellingToken1,
+                token1,
+                token2,
+                quantity,
+                cost,
+                id,
+                _makeOrder.owner,
+                msg.sender
+            );
+        } else {
+            emit OfferTake(
+                _makeOrder.sellingToken1,
+                token1,
+                token2,
+                cost,
+                quantity,
+                id,
+                _makeOrder.owner,
+                msg.sender
+            );
+        }
+
+        emit OfferUpdate(
+            id,
+            orders[id].sellingTokenAmt,
+            orders[id].buyingTokenAmt
+        );
+
+        if (orders[id].sellingTokenAmt == 0) {
+            delete orders[id];
+            activeOrders[id] = 0;
+
+            emit DeleteOffer(id, _makeOrder.owner, token1, token2);
+
+            return true;
+        }
+        return false;
+    }
+
+    /// @notice Cancels an order and refunds maker with remaining token
+    /// @dev Returns which token the order was selling
+    function _cancel(
+        uint256 id
+    ) internal isActive(id) returns (uint256 sellingToken1) {
+        if (!(msg.sender == orders[id].owner)) revert NonOwnerCantCancelOrder();
+
+        sellingToken1 = orders[id].sellingToken1;
+        ERC20 escrowedToken = sellingToken1 == 1 ? token1 : token2;
+
+        if (!escrowedToken.transfer(msg.sender, orders[id].sellingTokenAmt))
+            revert EscrowToBuyerError();
+
+        emit OrderCancelled(id, orders[id].owner, token1, token2);
+        emit DeleteOffer(id, orders[id].owner, token1, token2);
+
+        delete orders[id];
+        activeOrders[id] = 0;
     }
 }
