@@ -25,7 +25,8 @@
    1. require order id
    2. working only when order is active else reverts
    3. return offer details
-
+9. _buyOrder
+   1. orderid and token amount as arguments
 ## Questions regarding OrerBook
 
 1. Why using onchain, who is going to pay for the gass fee
