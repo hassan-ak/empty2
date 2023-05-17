@@ -51,6 +51,376 @@ describe('OrderBook contract', function () {
     };
   }
 
+  async function makeOrderToken1Big1Fixture() {
+    const [sender_11] = await ethers.getSigners();
+    const { hardhatTestContract, hardhatToken1 } = await loadFixture(
+      deployOrderBookFixture
+    );
+    await hardhatToken1.mintToken(sender_11.address, 1000);
+    await hardhatToken1.approve(hardhatTestContract.address, 10);
+    const token1Amt_11 = 10;
+    const token2Amt_11 = 1;
+    const priceRatio_11 = 1000;
+    const biggerToken_11 = 1;
+    const sellingToken1_11 = 1;
+
+    await hardhatTestContract
+      .connect(sender_11)
+      .makeOrder(
+        token1Amt_11,
+        token2Amt_11,
+        priceRatio_11,
+        biggerToken_11,
+        sellingToken1_11
+      );
+
+    const orderId_11 = await hardhatTestContract.currentOrderId();
+
+    const orderDetail_11 = await hardhatTestContract.orders(
+      orderId_11.toString()
+    );
+
+    return {
+      hardhatTestContract,
+      token1Amt_11,
+      token2Amt_11,
+      priceRatio_11,
+      biggerToken_11,
+      sellingToken1_11,
+      orderId_11,
+      orderDetail_11,
+      sender_11,
+    };
+  }
+
+  async function makeOrderToken1Multiple() {
+    const [sender_1_multiple] = await ethers.getSigners();
+    const { hardhatTestContract, hardhatToken1 } = await loadFixture(
+      deployOrderBookFixture
+    );
+    await hardhatToken1.mintToken(sender_1_multiple.address, 1000);
+    await hardhatToken1.approve(hardhatTestContract.address, 200);
+
+    const token1Amt_1_multiple_1 = 10;
+    const token2Amt_1_multiple_1 = 1;
+    const priceRatio_1_multiple_1 = 1000;
+    const biggerToken_1_multiple_1 = 1;
+    const sellingToken1_1_multiple_1 = 1;
+    await hardhatTestContract
+      .connect(sender_1_multiple)
+      .makeOrder(
+        token1Amt_1_multiple_1,
+        token2Amt_1_multiple_1,
+        priceRatio_1_multiple_1,
+        biggerToken_1_multiple_1,
+        sellingToken1_1_multiple_1
+      );
+    const orderId_1_multiple_1 = await hardhatTestContract.currentOrderId();
+    const orderDetail_1_multiple_1 = await hardhatTestContract.orders(
+      orderId_1_multiple_1.toString()
+    );
+
+    const token1Amt_1_multiple_2 = 10;
+    const token2Amt_1_multiple_2 = 1;
+    const priceRatio_1_multiple_2 = 1000;
+    const biggerToken_1_multiple_2 = 2;
+    const sellingToken1_1_multiple_2 = 1;
+
+    await hardhatTestContract
+      .connect(sender_1_multiple)
+      .makeOrder(
+        token1Amt_1_multiple_2,
+        token2Amt_1_multiple_2,
+        priceRatio_1_multiple_2,
+        biggerToken_1_multiple_2,
+        sellingToken1_1_multiple_2
+      );
+
+    const orderId_1_multiple_2 = await hardhatTestContract.currentOrderId();
+
+    const orderDetail_1_multiple_2 = await hardhatTestContract.orders(
+      orderId_1_multiple_2.toString()
+    );
+
+    return {
+      token1Amt_1_multiple_1,
+      token2Amt_1_multiple_1,
+      priceRatio_1_multiple_1,
+      biggerToken_1_multiple_1,
+      sellingToken1_1_multiple_1,
+      orderId_1_multiple_1,
+      orderDetail_1_multiple_1,
+      sender_1_multiple,
+      token1Amt_1_multiple_2,
+      token2Amt_1_multiple_2,
+      priceRatio_1_multiple_2,
+      biggerToken_1_multiple_2,
+      sellingToken1_1_multiple_2,
+      orderId_1_multiple_2,
+      orderDetail_1_multiple_2,
+    };
+  }
+
+  async function makeOrderToken2Big1Fixture() {
+    const [sender_21] = await ethers.getSigners();
+    const { hardhatTestContract, hardhatToken2 } = await loadFixture(
+      deployOrderBookFixture
+    );
+    await hardhatToken2.mintToken(sender_21.address, 1000);
+    await hardhatToken2.approve(hardhatTestContract.address, 10);
+    const token1Amt_21 = 10;
+    const token2Amt_21 = 1;
+    const priceRatio_21 = 1000;
+    const biggerToken_21 = 1;
+    const sellingToken1_21 = 0;
+
+    await hardhatTestContract
+      .connect(sender_21)
+      .makeOrder(
+        token1Amt_21,
+        token2Amt_21,
+        priceRatio_21,
+        biggerToken_21,
+        sellingToken1_21
+      );
+
+    const orderId_21 = await hardhatTestContract.currentOrderId();
+
+    const orderDetail_21 = await hardhatTestContract.orders(
+      orderId_21.toString()
+    );
+
+    return {
+      token1Amt_21,
+      token2Amt_21,
+      priceRatio_21,
+      biggerToken_21,
+      sellingToken1_21,
+      orderId_21,
+      orderDetail_21,
+      sender_21,
+    };
+  }
+
+  async function makeOrderToken1Big2Fixture() {
+    const [sender_12] = await ethers.getSigners();
+    const { hardhatTestContract, hardhatToken1 } = await loadFixture(
+      deployOrderBookFixture
+    );
+    await hardhatToken1.mintToken(sender_12.address, 1000);
+    await hardhatToken1.approve(hardhatTestContract.address, 10);
+    const token1Amt_12 = 10;
+    const token2Amt_12 = 1;
+    const priceRatio_12 = 1000;
+    const biggerToken_12 = 2;
+    const sellingToken1_12 = 1;
+
+    await hardhatTestContract
+      .connect(sender_12)
+      .makeOrder(
+        token1Amt_12,
+        token2Amt_12,
+        priceRatio_12,
+        biggerToken_12,
+        sellingToken1_12
+      );
+
+    const orderId_12 = await hardhatTestContract.currentOrderId();
+
+    const orderDetail_12 = await hardhatTestContract.orders(
+      orderId_12.toString()
+    );
+
+    return {
+      token1Amt_12,
+      token2Amt_12,
+      priceRatio_12,
+      biggerToken_12,
+      sellingToken1_12,
+      orderId_12,
+      orderDetail_12,
+      sender_12,
+    };
+  }
+
+  async function makeOrderToken2Multiple() {
+    const [sender_2_multiple] = await ethers.getSigners();
+    const { hardhatTestContract, hardhatToken2 } = await loadFixture(
+      deployOrderBookFixture
+    );
+    await hardhatToken2.mintToken(sender_2_multiple.address, 1000);
+    await hardhatToken2.approve(hardhatTestContract.address, 200);
+
+    const token1Amt_2_multiple_1 = 10;
+    const token2Amt_2_multiple_1 = 1;
+    const priceRatio_2_multiple_1 = 1000;
+    const biggerToken_2_multiple_1 = 1;
+    const sellingToken1_2_multiple_1 = 0;
+    await hardhatTestContract
+      .connect(sender_2_multiple)
+      .makeOrder(
+        token1Amt_2_multiple_1,
+        token2Amt_2_multiple_1,
+        priceRatio_2_multiple_1,
+        biggerToken_2_multiple_1,
+        sellingToken1_2_multiple_1
+      );
+    const orderId_2_multiple_1 = await hardhatTestContract.currentOrderId();
+    const orderDetail_2_multiple_1 = await hardhatTestContract.orders(
+      orderId_2_multiple_1.toString()
+    );
+
+    const token1Amt_2_multiple_2 = 21;
+    const token2Amt_2_multiple_2 = 77;
+    const priceRatio_2_multiple_2 = 1000;
+    const biggerToken_2_multiple_2 = 2;
+    const sellingToken1_2_multiple_2 = 0;
+
+    await hardhatTestContract
+      .connect(sender_2_multiple)
+      .makeOrder(
+        token1Amt_2_multiple_2,
+        token2Amt_2_multiple_2,
+        priceRatio_2_multiple_2,
+        biggerToken_2_multiple_2,
+        sellingToken1_2_multiple_2
+      );
+
+    const orderId_2_multiple_2 = await hardhatTestContract.currentOrderId();
+
+    const orderDetail_2_multiple_2 = await hardhatTestContract.orders(
+      orderId_2_multiple_2.toString()
+    );
+
+    return {
+      token1Amt_2_multiple_1,
+      token2Amt_2_multiple_1,
+      priceRatio_2_multiple_1,
+      biggerToken_2_multiple_1,
+      sellingToken1_2_multiple_1,
+      orderId_2_multiple_1,
+      orderDetail_2_multiple_1,
+      sender_2_multiple,
+      token1Amt_2_multiple_2,
+      token2Amt_2_multiple_2,
+      priceRatio_2_multiple_2,
+      biggerToken_2_multiple_2,
+      sellingToken1_2_multiple_2,
+      orderId_2_multiple_2,
+      orderDetail_2_multiple_2,
+    };
+  }
+
+  async function makeOrderToken2Big2Fixture() {
+    const [sender_22] = await ethers.getSigners();
+    const { hardhatTestContract, hardhatToken2 } = await loadFixture(
+      deployOrderBookFixture
+    );
+    await hardhatToken2.mintToken(sender_22.address, 1000);
+    await hardhatToken2.approve(hardhatTestContract.address, 10);
+    const token1Amt_22 = 10;
+    const token2Amt_22 = 1;
+    const priceRatio_22 = 1000;
+    const biggerToken_22 = 2;
+    const sellingToken1_22 = 0;
+
+    await hardhatTestContract
+      .connect(sender_22)
+      .makeOrder(
+        token1Amt_22,
+        token2Amt_22,
+        priceRatio_22,
+        biggerToken_22,
+        sellingToken1_22
+      );
+
+    const orderId_22 = await hardhatTestContract.currentOrderId();
+
+    const orderDetail_22 = await hardhatTestContract.orders(
+      orderId_22.toString()
+    );
+
+    return {
+      token1Amt_22,
+      token2Amt_22,
+      priceRatio_22,
+      biggerToken_22,
+      sellingToken1_22,
+      orderId_22,
+      orderDetail_22,
+      sender_22,
+    };
+  }
+
+  async function makeOrderToken12Multiple() {
+    const [sender_1_2_multiple] = await ethers.getSigners();
+    const { hardhatTestContract, hardhatToken2, hardhatToken1 } =
+      await loadFixture(deployOrderBookFixture);
+    await hardhatToken1.mintToken(sender_1_2_multiple.address, 1000);
+    await hardhatToken1.approve(hardhatTestContract.address, 200);
+    await hardhatToken2.mintToken(sender_1_2_multiple.address, 1000);
+    await hardhatToken2.approve(hardhatTestContract.address, 200);
+
+    const token1Amt_1_2_multiple_1 = 10;
+    const token2Amt_1_2_multiple_1 = 1;
+    const priceRatio_1_2_multiple_1 = 1000;
+    const biggerToken_1_2_multiple_1 = 1;
+    const sellingToken1_1_2_multiple_1 = 1;
+    await hardhatTestContract
+      .connect(sender_1_2_multiple)
+      .makeOrder(
+        token1Amt_1_2_multiple_1,
+        token2Amt_1_2_multiple_1,
+        priceRatio_1_2_multiple_1,
+        biggerToken_1_2_multiple_1,
+        sellingToken1_1_2_multiple_1
+      );
+    const orderId_1_2_multiple_1 = await hardhatTestContract.currentOrderId();
+    const orderDetail_1_2_multiple_1 = await hardhatTestContract.orders(
+      orderId_1_2_multiple_1.toString()
+    );
+
+    const token1Amt_1_2_multiple_2 = 21;
+    const token2Amt_1_2_multiple_2 = 77;
+    const priceRatio_1_2_multiple_2 = 1000;
+    const biggerToken_1_2_multiple_2 = 2;
+    const sellingToken1_1_2_multiple_2 = 0;
+
+    await hardhatTestContract
+      .connect(sender_1_2_multiple)
+      .makeOrder(
+        token1Amt_1_2_multiple_2,
+        token2Amt_1_2_multiple_2,
+        priceRatio_1_2_multiple_2,
+        biggerToken_1_2_multiple_2,
+        sellingToken1_1_2_multiple_2
+      );
+
+    const orderId_1_2_multiple_2 = await hardhatTestContract.currentOrderId();
+
+    const orderDetail_1_2_multiple_2 = await hardhatTestContract.orders(
+      orderId_1_2_multiple_2.toString()
+    );
+
+    return {
+      token1Amt_1_2_multiple_1,
+      token2Amt_1_2_multiple_1,
+      priceRatio_1_2_multiple_1,
+      biggerToken_1_2_multiple_1,
+      sellingToken1_1_2_multiple_1,
+      orderId_1_2_multiple_1,
+      orderDetail_1_2_multiple_1,
+      sender_1_2_multiple,
+      token1Amt_1_2_multiple_2,
+      token2Amt_1_2_multiple_2,
+      priceRatio_1_2_multiple_2,
+      biggerToken_1_2_multiple_2,
+      sellingToken1_1_2_multiple_2,
+      orderId_1_2_multiple_2,
+      orderDetail_1_2_multiple_2,
+    };
+  }
+
   describe('On Contract Deployment', function () {
     it('should assign correct ERC20 instance as token1', async function () {
       const { hardhatOrderBook, hardhatToken1 } = await loadFixture(
@@ -260,23 +630,71 @@ describe('OrderBook contract', function () {
       });
     });
 
+    describe('View offers --- viewOffer()', function () {
+      it('should revert with custom error "InactiveOrder" when no active order with given id', async function () {
+        const { hardhatTestContract } = await loadFixture(
+          deployOrderBookFixture
+        );
+        await expect(
+          hardhatTestContract.viewOffer('100')
+        ).to.be.revertedWithCustomError(hardhatTestContract, 'InactiveOrder');
+      });
+
+      it('should not revert when order is active', async function () {
+        const [owner] = await ethers.getSigners();
+        const { hardhatTestContract, hardhatToken1 } = await loadFixture(
+          deployOrderBookFixture
+        );
+        await hardhatToken1.mintToken(owner.address, 1000);
+        await hardhatToken1.approve(hardhatTestContract.address, 10);
+        await hardhatTestContract.connect(owner).makeOrder(10, 1, 1000, 1, 1);
+        const orderId = await hardhatTestContract.currentOrderId();
+        const orderDetail = await hardhatTestContract.activeOrders(
+          orderId.toString()
+        );
+        await expect(hardhatTestContract.viewOffer(orderId.toString())).to.not
+          .be.reverted;
+      });
+
+      it('should return offer details', async function () {
+        const [owner] = await ethers.getSigners();
+        const { hardhatTestContract, hardhatToken1 } = await loadFixture(
+          deployOrderBookFixture
+        );
+        await hardhatToken1.mintToken(owner.address, 1000);
+        await hardhatToken1.approve(hardhatTestContract.address, 10);
+        await hardhatTestContract.connect(owner).makeOrder(10, 1, 1000, 1, 1);
+        const orderId = await hardhatTestContract.currentOrderId();
+        const orderDetail = await hardhatTestContract.orders(
+          orderId.toString()
+        );
+        const [amt1, amt2, addr, selling] = await hardhatTestContract.viewOffer(
+          orderId.toString()
+        );
+        expect(amt1, amt2, addr, selling).to.equal(
+          orderDetail.sellingTokenAmt,
+          orderDetail.buyingTokenAmt,
+          orderDetail.owner,
+          orderDetail.sellingToken1
+        );
+      });
+    });
+
     describe('Maker Order --- _make()', function () {
       it('should revert with a correct custom error "InvalidFeeValue" when sellingToken1 > 1', async function () {
         const { hardhatOrderBook, hardhatTestContract } = await loadFixture(
           deployOrderBookFixture
         );
-        const token1Amt = 100;
-        const token2Amt = 200;
-        const priceRatio = 1000;
-        const biggerToken = 1;
+        const { token1Amt_11, token2Amt_11, priceRatio_11, biggerToken_11 } =
+          await loadFixture(makeOrderToken1Big1Fixture);
         const sellingToken1 = 2;
 
         await expect(
           hardhatTestContract.makeOrder(
-            token1Amt,
-            token2Amt,
-            priceRatio,
-            biggerToken,
+            token1Amt_11,
+            token2Amt_11,
+            priceRatio_11,
+            biggerToken_11,
             sellingToken1
           )
         ).to.be.revertedWithCustomError(
@@ -286,30 +704,47 @@ describe('OrderBook contract', function () {
       });
 
       it('should not revert when sellingToken1 is 0 or 1', async function () {
-        const [sender] = await ethers.getSigners();
+        const {
+          sender_11,
+          token1Amt_11,
+          token2Amt_11,
+          priceRatio_11,
+          biggerToken_11,
+        } = await loadFixture(makeOrderToken1Big1Fixture);
 
         const { hardhatTestContract, hardhatToken1, hardhatToken2 } =
           await loadFixture(deployOrderBookFixture);
 
-        await hardhatToken2.mintToken(sender.address, 1000);
+        await hardhatToken2.mintToken(sender_11.address, 1000);
         await hardhatToken2.approve(hardhatTestContract.address, 200);
 
-        await hardhatToken1.mintToken(sender.address, 1000);
+        await hardhatToken1.mintToken(sender_11.address, 1000);
         await hardhatToken1.approve(hardhatTestContract.address, 200);
 
-        const token1Amt = 10;
-        const token2Amt = 10;
-        const priceRatio = 1000;
-        const biggerToken = 1;
+        const sellingToken1_11 = 1;
+        const sellingToken1_21 = 0;
+
         await expect(
           hardhatTestContract
-            .connect(sender)
-            .makeOrder(token1Amt, token2Amt, priceRatio, biggerToken, 0)
+            .connect(sender_11)
+            .makeOrder(
+              token1Amt_11,
+              token2Amt_11,
+              priceRatio_11,
+              biggerToken_11,
+              sellingToken1_21
+            )
         ).to.not.be.reverted;
         await expect(
           hardhatTestContract
-            .connect(sender)
-            .makeOrder(token1Amt, token2Amt, priceRatio, biggerToken, 1)
+            .connect(sender_11)
+            .makeOrder(
+              token1Amt_11,
+              token2Amt_11,
+              priceRatio_11,
+              biggerToken_11,
+              sellingToken1_11
+            )
         ).to.not.be.reverted;
       });
 
@@ -317,19 +752,20 @@ describe('OrderBook contract', function () {
         const { hardhatOrderBook, hardhatTestContract } = await loadFixture(
           deployOrderBookFixture
         );
+        const {
+          token2Amt_11,
+          priceRatio_11,
+          biggerToken_11,
+          sellingToken1_11,
+        } = await loadFixture(makeOrderToken1Big1Fixture);
         const token1Amt = 0;
-        const token2Amt = 200;
-        const priceRatio = 1000;
-        const biggerToken = 1;
-        const sellingToken1 = 1;
-
         await expect(
           hardhatTestContract.makeOrder(
             token1Amt,
-            token2Amt,
-            priceRatio,
-            biggerToken,
-            sellingToken1
+            token2Amt_11,
+            priceRatio_11,
+            biggerToken_11,
+            sellingToken1_11
           )
         ).to.be.revertedWithCustomError(hardhatOrderBook, 'ZeroTokenAmount');
       });
@@ -338,502 +774,758 @@ describe('OrderBook contract', function () {
         const { hardhatOrderBook, hardhatTestContract } = await loadFixture(
           deployOrderBookFixture
         );
-        const token1Amt = 100;
+        const {
+          token1Amt_11,
+          priceRatio_11,
+          biggerToken_11,
+          sellingToken1_11,
+        } = await loadFixture(makeOrderToken1Big1Fixture);
         const token2Amt = 0;
-        const priceRatio = 1000;
-        const biggerToken = 1;
-        const sellingToken1 = 1;
 
         await expect(
           hardhatTestContract.makeOrder(
-            token1Amt,
+            token1Amt_11,
             token2Amt,
-            priceRatio,
-            biggerToken,
-            sellingToken1
+            priceRatio_11,
+            biggerToken_11,
+            sellingToken1_11
           )
         ).to.be.revertedWithCustomError(hardhatOrderBook, 'ZeroTokenAmount');
       });
 
       it('should not revert when both token1Amt, token2Amt are not 0', async function () {
-        const [sender] = await ethers.getSigners();
+        const {
+          sender_11,
+          token1Amt_11,
+          token2Amt_11,
+          priceRatio_11,
+          biggerToken_11,
+          sellingToken1_11,
+        } = await loadFixture(makeOrderToken1Big1Fixture);
 
         const { hardhatTestContract, hardhatToken1 } = await loadFixture(
           deployOrderBookFixture
         );
 
-        await hardhatToken1.mintToken(sender.address, 1000);
+        await hardhatToken1.mintToken(sender_11.address, 1000);
         await hardhatToken1.approve(hardhatTestContract.address, 10);
 
-        const token1Amt = 10;
-        const token2Amt = 1;
-        const priceRatio = 1000;
-        const biggerToken = 1;
-        const sellingToken1 = 1;
         await expect(
           hardhatTestContract
-            .connect(sender)
+            .connect(sender_11)
             .makeOrder(
-              token1Amt,
-              token2Amt,
-              priceRatio,
-              biggerToken,
-              sellingToken1
+              token1Amt_11,
+              token2Amt_11,
+              priceRatio_11,
+              biggerToken_11,
+              sellingToken1_11
             )
         ).to.not.be.reverted;
       });
 
       it('should revert when sellingToken1 is true and transferFrom fails', async function () {
-        const [sender] = await ethers.getSigners();
+        const {
+          sender_11,
+          token2Amt_11,
+          priceRatio_11,
+          biggerToken_11,
+          sellingToken1_11,
+        } = await loadFixture(makeOrderToken1Big1Fixture);
 
-        const { hardhatOrderBook, hardhatTestContract, hardhatToken1 } =
-          await loadFixture(deployOrderBookFixture);
+        const { hardhatTestContract, hardhatToken1 } = await loadFixture(
+          deployOrderBookFixture
+        );
 
-        await hardhatToken1.mintToken(sender.address, 1000);
+        await hardhatToken1.mintToken(sender_11.address, 1000);
         await hardhatToken1.approve(hardhatTestContract.address, 10);
 
         // Call the _make function with sellingToken1 = 1
         const token1Amt = 20;
-        const token2Amt = 1;
-        const priceRatio = 1000;
-        const biggerToken = 1;
-        const sellingToken1 = 1;
 
         await expect(
           hardhatTestContract
-            .connect(sender)
+            .connect(sender_11)
             .makeOrder(
               token1Amt,
-              token2Amt,
-              priceRatio,
-              biggerToken,
-              sellingToken1
+              token2Amt_11,
+              priceRatio_11,
+              biggerToken_11,
+              sellingToken1_11
             )
         ).to.be.reverted;
       });
 
       it('should not revert when sellingToken1 is true and transferFrom do not fails', async function () {
-        const [sender] = await ethers.getSigners();
+        const {
+          sender_11,
+          token1Amt_11,
+          token2Amt_11,
+          priceRatio_11,
+          biggerToken_11,
+          sellingToken1_11,
+        } = await loadFixture(makeOrderToken1Big1Fixture);
 
         const { hardhatTestContract, hardhatToken1 } = await loadFixture(
           deployOrderBookFixture
         );
 
-        await hardhatToken1.mintToken(sender.address, 1000);
+        await hardhatToken1.mintToken(sender_11.address, 1000);
         await hardhatToken1.approve(hardhatTestContract.address, 10);
 
-        const token1Amt = 10;
-        const token2Amt = 1;
-        const priceRatio = 1000;
-        const biggerToken = 1;
-        const sellingToken1 = 1;
         await expect(
           hardhatTestContract
-            .connect(sender)
+            .connect(sender_11)
             .makeOrder(
-              token1Amt,
-              token2Amt,
-              priceRatio,
-              biggerToken,
-              sellingToken1
+              token1Amt_11,
+              token2Amt_11,
+              priceRatio_11,
+              biggerToken_11,
+              sellingToken1_11
             )
         ).to.not.be.reverted;
       });
 
       it('should revert when sellingToken1 is false and transferFrom fails', async function () {
-        const [sender] = await ethers.getSigners();
+        const {
+          sender_21,
+          token1Amt_21,
+          priceRatio_21,
+          biggerToken_21,
+          sellingToken1_21,
+        } = await loadFixture(makeOrderToken2Big1Fixture);
 
-        const { hardhatOrderBook, hardhatTestContract, hardhatToken2 } =
-          await loadFixture(deployOrderBookFixture);
+        const { hardhatTestContract, hardhatToken2 } = await loadFixture(
+          deployOrderBookFixture
+        );
 
-        await hardhatToken2.mintToken(sender.address, 1000);
-        await hardhatToken2.approve(hardhatTestContract.address, 10);
-
-        // Call the _make function with sellingToken1 = 0
-        const token1Amt = 20;
         const token2Amt = 20;
-        const priceRatio = 1000;
-        const biggerToken = 1;
-        const sellingToken1 = 0;
 
         await expect(
           hardhatTestContract
-            .connect(sender)
+            .connect(sender_21)
             .makeOrder(
-              token1Amt,
+              token1Amt_21,
               token2Amt,
-              priceRatio,
-              biggerToken,
-              sellingToken1
+              priceRatio_21,
+              biggerToken_21,
+              sellingToken1_21
             )
         ).to.be.reverted;
       });
 
       it('should not revert when sellingToken1 is false and transferFrom do not fails', async function () {
-        const [sender] = await ethers.getSigners();
+        const {
+          sender_21,
+          token1Amt_21,
+          token2Amt_21,
+          priceRatio_21,
+          biggerToken_21,
+          sellingToken1_21,
+        } = await loadFixture(makeOrderToken2Big1Fixture);
 
         const { hardhatTestContract, hardhatToken2 } = await loadFixture(
           deployOrderBookFixture
         );
 
-        await hardhatToken2.mintToken(sender.address, 1000);
+        await hardhatToken2.mintToken(sender_21.address, 1000);
         await hardhatToken2.approve(hardhatTestContract.address, 10);
 
-        const token1Amt = 10;
-        const token2Amt = 1;
-        const priceRatio = 1000;
-        const biggerToken = 1;
-        const sellingToken1 = 0;
         await expect(
           hardhatTestContract
-            .connect(sender)
+            .connect(sender_21)
             .makeOrder(
-              token1Amt,
-              token2Amt,
-              priceRatio,
-              biggerToken,
-              sellingToken1
+              token1Amt_21,
+              token2Amt_21,
+              priceRatio_21,
+              biggerToken_21,
+              sellingToken1_21
             )
         ).to.not.be.reverted;
       });
 
       it('should assign correct orderId when sellingToken1 is true', async function () {
-        const [sender] = await ethers.getSigners();
-        const { hardhatTestContract, hardhatToken1 } = await loadFixture(
-          deployOrderBookFixture
-        );
-        await hardhatToken1.mintToken(sender.address, 1000);
-        await hardhatToken1.approve(hardhatTestContract.address, 10);
-        const token1Amt = 10;
-        const token2Amt = 1;
-        const priceRatio = 1000;
-        const biggerToken = 1;
-        const sellingToken1 = 1;
-
-        await hardhatTestContract
-          .connect(sender)
-          .makeOrder(
-            token1Amt,
-            token2Amt,
-            priceRatio,
-            biggerToken,
-            sellingToken1
-          );
-        const orderId = await hardhatTestContract.currentOrderId();
-        expect(orderId.toString()).to.equal('2');
+        const { orderId_11 } = await loadFixture(makeOrderToken1Big1Fixture);
+        expect(orderId_11.toString()).to.equal('2');
       });
 
       it('should assign correct orderId when sellingToken1 is false', async function () {
-        const [sender] = await ethers.getSigners();
-        const { hardhatTestContract, hardhatToken2 } = await loadFixture(
-          deployOrderBookFixture
-        );
-        await hardhatToken2.mintToken(sender.address, 1000);
-        await hardhatToken2.approve(hardhatTestContract.address, 10);
-        const token1Amt = 10;
-        const token2Amt = 1;
-        const priceRatio = 1000;
-        const biggerToken = 1;
-        const sellingToken1 = 0;
-
-        await hardhatTestContract
-          .connect(sender)
-          .makeOrder(
-            token1Amt,
-            token2Amt,
-            priceRatio,
-            biggerToken,
-            sellingToken1
-          );
-        const orderId = await hardhatTestContract.currentOrderId();
-        expect(orderId.toString()).to.equal('2');
+        const { orderId_21 } = await loadFixture(makeOrderToken2Big1Fixture);
+        expect(orderId_21.toString()).to.equal('2');
       });
 
       it('should assign correct orderDetails when sellingToken1 is true', async function () {
-        const [sender] = await ethers.getSigners();
-        const { hardhatTestContract, hardhatToken1, hardhatOrderBook } =
-          await loadFixture(deployOrderBookFixture);
-        await hardhatToken1.mintToken(sender.address, 1000);
-        await hardhatToken1.approve(hardhatTestContract.address, 10);
-        const token1Amt = 10;
-        const token2Amt = 1;
-        const priceRatio = 1000;
-        const biggerToken = 1;
-        const sellingToken1 = 1;
-
-        await hardhatTestContract
-          .connect(sender)
-          .makeOrder(
-            token1Amt,
-            token2Amt,
-            priceRatio,
-            biggerToken,
-            sellingToken1
-          );
-        const orderId = await hardhatTestContract.currentOrderId();
-        const orderDetail = await hardhatTestContract.orders(
-          orderId.toString()
+        const {
+          orderDetail_11,
+          token1Amt_11,
+          token2Amt_11,
+          sender_11,
+          sellingToken1_11,
+          biggerToken_11,
+          priceRatio_11,
+        } = await loadFixture(makeOrderToken1Big1Fixture);
+        expect(orderDetail_11.sellingTokenAmt.toString()).to.equal(
+          token1Amt_11.toString()
         );
-        expect(orderDetail.sellingTokenAmt.toString()).to.equal(
-          token1Amt.toString()
+        expect(orderDetail_11.buyingTokenAmt.toString()).to.equal(
+          token2Amt_11.toString()
         );
-        expect(orderDetail.buyingTokenAmt.toString()).to.equal(
-          token2Amt.toString()
-        );
-        expect(orderDetail.owner).to.equal(sender.address);
-        expect(orderDetail.sellingToken1).to.equal(sellingToken1);
-        expect(orderDetail.biggerToken).to.equal(biggerToken);
-        expect(orderDetail.priceRatio).to.equal(priceRatio);
+        expect(orderDetail_11.owner).to.equal(sender_11.address);
+        expect(orderDetail_11.sellingToken1).to.equal(sellingToken1_11);
+        expect(orderDetail_11.biggerToken).to.equal(biggerToken_11);
+        expect(orderDetail_11.priceRatio).to.equal(priceRatio_11);
       });
 
       it('should assign correct orderDetails when sellingToken1 is true (Multiple Orders)', async function () {
-        const [sender] = await ethers.getSigners();
-        const { hardhatTestContract, hardhatToken1, hardhatOrderBook } =
-          await loadFixture(deployOrderBookFixture);
-        await hardhatToken1.mintToken(sender.address, 1000);
-        await hardhatToken1.approve(hardhatTestContract.address, 100);
-
-        await hardhatTestContract.connect(sender).makeOrder(75, 20, 800, 1, 1);
-        const orderId1 = await hardhatTestContract.currentOrderId();
-        const orderDetail1 = await hardhatTestContract.orders(
-          orderId1.toString()
+        const {
+          token1Amt_1_multiple_1,
+          token2Amt_1_multiple_1,
+          priceRatio_1_multiple_1,
+          biggerToken_1_multiple_1,
+          sellingToken1_1_multiple_1,
+          orderDetail_1_multiple_1,
+          sender_1_multiple,
+          token1Amt_1_multiple_2,
+          token2Amt_1_multiple_2,
+          priceRatio_1_multiple_2,
+          biggerToken_1_multiple_2,
+          sellingToken1_1_multiple_2,
+          orderDetail_1_multiple_2,
+        } = await loadFixture(makeOrderToken1Multiple);
+        expect(orderDetail_1_multiple_1.sellingTokenAmt.toString()).to.equal(
+          token1Amt_1_multiple_1.toString()
         );
-        expect(orderDetail1.sellingTokenAmt.toString()).to.equal('75');
-        expect(orderDetail1.buyingTokenAmt.toString()).to.equal('20');
-        expect(orderDetail1.owner).to.equal(sender.address);
-        expect(orderDetail1.sellingToken1).to.equal(1);
-        expect(orderDetail1.biggerToken).to.equal(1);
-        expect(orderDetail1.priceRatio).to.equal(800);
-
-        await hardhatTestContract.connect(sender).makeOrder(25, 11, 1800, 2, 1);
-        const orderId2 = await hardhatTestContract.currentOrderId();
-        const orderDetail2 = await hardhatTestContract.orders(
-          orderId2.toString()
+        expect(orderDetail_1_multiple_1.buyingTokenAmt.toString()).to.equal(
+          token2Amt_1_multiple_1.toString()
         );
-        expect(orderDetail2.sellingTokenAmt.toString()).to.equal('25');
-        expect(orderDetail2.buyingTokenAmt.toString()).to.equal('11');
-        expect(orderDetail2.owner).to.equal(sender.address);
-        expect(orderDetail2.sellingToken1).to.equal(1);
-        expect(orderDetail2.biggerToken).to.equal(2);
-        expect(orderDetail2.priceRatio).to.equal(1800);
+        expect(orderDetail_1_multiple_1.owner).to.equal(
+          sender_1_multiple.address
+        );
+        expect(orderDetail_1_multiple_1.sellingToken1).to.equal(
+          sellingToken1_1_multiple_1
+        );
+        expect(orderDetail_1_multiple_1.biggerToken).to.equal(
+          biggerToken_1_multiple_1
+        );
+        expect(orderDetail_1_multiple_1.priceRatio).to.equal(
+          priceRatio_1_multiple_1
+        );
+
+        expect(orderDetail_1_multiple_2.sellingTokenAmt.toString()).to.equal(
+          token1Amt_1_multiple_2.toString()
+        );
+        expect(orderDetail_1_multiple_2.buyingTokenAmt.toString()).to.equal(
+          token2Amt_1_multiple_2.toString()
+        );
+        expect(orderDetail_1_multiple_2.owner).to.equal(
+          sender_1_multiple.address
+        );
+        expect(orderDetail_1_multiple_2.sellingToken1).to.equal(
+          sellingToken1_1_multiple_2
+        );
+        expect(orderDetail_1_multiple_2.biggerToken).to.equal(
+          biggerToken_1_multiple_2
+        );
+        expect(orderDetail_1_multiple_2.priceRatio).to.equal(
+          priceRatio_1_multiple_2
+        );
       });
 
       it('should assign correct orderDetails when sellingToken1 is false', async function () {
-        const [sender] = await ethers.getSigners();
-        const { hardhatTestContract, hardhatToken2, hardhatOrderBook } =
-          await loadFixture(deployOrderBookFixture);
-        await hardhatToken2.mintToken(sender.address, 1000);
-        await hardhatToken2.approve(hardhatTestContract.address, 500);
-        const token1Amt = 10;
-        const token2Amt = 150;
-        const priceRatio = 750;
-        const biggerToken = 1;
-        const sellingToken1 = 0;
-
-        await hardhatTestContract
-          .connect(sender)
-          .makeOrder(
-            token1Amt,
-            token2Amt,
-            priceRatio,
-            biggerToken,
-            sellingToken1
-          );
-        const orderId = await hardhatTestContract.currentOrderId();
-        const orderDetail = await hardhatTestContract.orders(
-          orderId.toString()
+        const {
+          orderDetail_21,
+          token1Amt_21,
+          token2Amt_21,
+          sender_21,
+          sellingToken1_21,
+          biggerToken_21,
+          priceRatio_21,
+        } = await loadFixture(makeOrderToken2Big1Fixture);
+        expect(orderDetail_21.sellingTokenAmt.toString()).to.equal(
+          token2Amt_21.toString()
         );
-        expect(orderDetail.sellingTokenAmt.toString()).to.equal(
-          token2Amt.toString()
+        expect(orderDetail_21.buyingTokenAmt.toString()).to.equal(
+          token1Amt_21.toString()
         );
-        expect(orderDetail.buyingTokenAmt.toString()).to.equal(
-          token1Amt.toString()
-        );
-        expect(orderDetail.owner).to.equal(sender.address);
-        expect(orderDetail.sellingToken1).to.equal(sellingToken1);
-        expect(orderDetail.biggerToken).to.equal(biggerToken);
-        expect(orderDetail.priceRatio).to.equal(priceRatio);
+        expect(orderDetail_21.owner).to.equal(sender_21.address);
+        expect(orderDetail_21.sellingToken1).to.equal(sellingToken1_21);
+        expect(orderDetail_21.biggerToken).to.equal(biggerToken_21);
+        expect(orderDetail_21.priceRatio).to.equal(priceRatio_21);
       });
 
       it('should assign correct orderDetails when sellingToken1 is false (Multiple Orders)', async function () {
-        const [sender] = await ethers.getSigners();
-        const { hardhatTestContract, hardhatToken2, hardhatOrderBook } =
-          await loadFixture(deployOrderBookFixture);
-        await hardhatToken2.mintToken(sender.address, 1000);
-        await hardhatToken2.approve(hardhatTestContract.address, 750);
-
-        await hardhatTestContract.connect(sender).makeOrder(75, 20, 800, 1, 0);
-        const orderId1 = await hardhatTestContract.currentOrderId();
-        const orderDetail1 = await hardhatTestContract.orders(
-          orderId1.toString()
+        const {
+          token1Amt_2_multiple_1,
+          token2Amt_2_multiple_1,
+          priceRatio_2_multiple_1,
+          biggerToken_2_multiple_1,
+          sellingToken1_2_multiple_1,
+          orderDetail_2_multiple_1,
+          sender_2_multiple,
+          token1Amt_2_multiple_2,
+          token2Amt_2_multiple_2,
+          priceRatio_2_multiple_2,
+          biggerToken_2_multiple_2,
+          sellingToken1_2_multiple_2,
+          orderDetail_2_multiple_2,
+        } = await loadFixture(makeOrderToken2Multiple);
+        expect(orderDetail_2_multiple_1.sellingTokenAmt.toString()).to.equal(
+          token2Amt_2_multiple_1.toString()
         );
-        expect(orderDetail1.sellingTokenAmt.toString()).to.equal('20');
-        expect(orderDetail1.buyingTokenAmt.toString()).to.equal('75');
-        expect(orderDetail1.owner).to.equal(sender.address);
-        expect(orderDetail1.sellingToken1).to.equal(0);
-        expect(orderDetail1.biggerToken).to.equal(1);
-        expect(orderDetail1.priceRatio).to.equal(800);
-
-        await hardhatTestContract.connect(sender).makeOrder(25, 11, 1800, 2, 0);
-        const orderId2 = await hardhatTestContract.currentOrderId();
-        const orderDetail2 = await hardhatTestContract.orders(
-          orderId2.toString()
+        expect(orderDetail_2_multiple_1.buyingTokenAmt.toString()).to.equal(
+          token1Amt_2_multiple_1.toString()
         );
-        expect(orderDetail2.sellingTokenAmt.toString()).to.equal('11');
-        expect(orderDetail2.buyingTokenAmt.toString()).to.equal('25');
-        expect(orderDetail2.owner).to.equal(sender.address);
-        expect(orderDetail2.sellingToken1).to.equal(0);
-        expect(orderDetail2.biggerToken).to.equal(2);
-        expect(orderDetail2.priceRatio).to.equal(1800);
+        expect(orderDetail_2_multiple_1.owner).to.equal(
+          sender_2_multiple.address
+        );
+        expect(orderDetail_2_multiple_1.sellingToken1).to.equal(
+          sellingToken1_2_multiple_1
+        );
+        expect(orderDetail_2_multiple_1.biggerToken).to.equal(
+          biggerToken_2_multiple_1
+        );
+        expect(orderDetail_2_multiple_1.priceRatio).to.equal(
+          priceRatio_2_multiple_1
+        );
+
+        expect(orderDetail_2_multiple_2.sellingTokenAmt.toString()).to.equal(
+          token2Amt_2_multiple_2.toString()
+        );
+        expect(orderDetail_2_multiple_2.buyingTokenAmt.toString()).to.equal(
+          token1Amt_2_multiple_2.toString()
+        );
+        expect(orderDetail_2_multiple_2.owner).to.equal(
+          sender_2_multiple.address
+        );
+        expect(orderDetail_2_multiple_2.sellingToken1).to.equal(
+          sellingToken1_2_multiple_2
+        );
+        expect(orderDetail_2_multiple_2.biggerToken).to.equal(
+          biggerToken_2_multiple_2
+        );
+        expect(orderDetail_2_multiple_2.priceRatio).to.equal(
+          priceRatio_2_multiple_2
+        );
       });
 
       it('should assign correct orderDetails when sellingToken1 is true or false (Both Cases)', async function () {
-        const [sender] = await ethers.getSigners();
         const {
-          hardhatTestContract,
-          hardhatToken1,
-          hardhatToken2,
-          hardhatOrderBook,
-        } = await loadFixture(deployOrderBookFixture);
-        await hardhatToken2.mintToken(sender.address, 1000);
-        await hardhatToken2.approve(hardhatTestContract.address, 750);
-
-        await hardhatTestContract.connect(sender).makeOrder(75, 20, 800, 1, 0);
-        const orderId1 = await hardhatTestContract.currentOrderId();
-        const orderDetail1 = await hardhatTestContract.orders(
-          orderId1.toString()
+          token1Amt_1_2_multiple_1,
+          token2Amt_1_2_multiple_1,
+          priceRatio_1_2_multiple_1,
+          biggerToken_1_2_multiple_1,
+          sellingToken1_1_2_multiple_1,
+          orderDetail_1_2_multiple_1,
+          sender_1_2_multiple,
+          token1Amt_1_2_multiple_2,
+          token2Amt_1_2_multiple_2,
+          priceRatio_1_2_multiple_2,
+          biggerToken_1_2_multiple_2,
+          sellingToken1_1_2_multiple_2,
+          orderDetail_1_2_multiple_2,
+        } = await loadFixture(makeOrderToken12Multiple);
+        expect(orderDetail_1_2_multiple_1.sellingTokenAmt.toString()).to.equal(
+          token1Amt_1_2_multiple_1.toString()
         );
-        expect(orderDetail1.sellingTokenAmt.toString()).to.equal('20');
-        expect(orderDetail1.buyingTokenAmt.toString()).to.equal('75');
-        expect(orderDetail1.owner).to.equal(sender.address);
-        expect(orderDetail1.sellingToken1).to.equal(0);
-        expect(orderDetail1.biggerToken).to.equal(1);
-        expect(orderDetail1.priceRatio).to.equal(800);
-
-        await hardhatToken1.mintToken(sender.address, 1000);
-        await hardhatToken1.approve(hardhatTestContract.address, 750);
-        await hardhatTestContract.connect(sender).makeOrder(25, 11, 1800, 1, 1);
-        const orderId2 = await hardhatTestContract.currentOrderId();
-        const orderDetail2 = await hardhatTestContract.orders(
-          orderId2.toString()
+        expect(orderDetail_1_2_multiple_1.buyingTokenAmt.toString()).to.equal(
+          token2Amt_1_2_multiple_1.toString()
         );
-        expect(orderDetail2.sellingTokenAmt.toString()).to.equal('25');
-        expect(orderDetail2.buyingTokenAmt.toString()).to.equal('11');
-        expect(orderDetail2.owner).to.equal(sender.address);
-        expect(orderDetail2.sellingToken1).to.equal(1);
-        expect(orderDetail2.biggerToken).to.equal(1);
-        expect(orderDetail2.priceRatio).to.equal(1800);
+        expect(orderDetail_1_2_multiple_1.owner).to.equal(
+          sender_1_2_multiple.address
+        );
+        expect(orderDetail_1_2_multiple_1.sellingToken1).to.equal(
+          sellingToken1_1_2_multiple_1
+        );
+        expect(orderDetail_1_2_multiple_1.biggerToken).to.equal(
+          biggerToken_1_2_multiple_1
+        );
+        expect(orderDetail_1_2_multiple_1.priceRatio).to.equal(
+          priceRatio_1_2_multiple_1
+        );
+
+        expect(orderDetail_1_2_multiple_2.sellingTokenAmt.toString()).to.equal(
+          token2Amt_1_2_multiple_2.toString()
+        );
+        expect(orderDetail_1_2_multiple_2.buyingTokenAmt.toString()).to.equal(
+          token1Amt_1_2_multiple_2.toString()
+        );
+        expect(orderDetail_1_2_multiple_2.owner).to.equal(
+          sender_1_2_multiple.address
+        );
+        expect(orderDetail_1_2_multiple_2.sellingToken1).to.equal(
+          sellingToken1_1_2_multiple_2
+        );
+        expect(orderDetail_1_2_multiple_2.biggerToken).to.equal(
+          biggerToken_1_2_multiple_2
+        );
+        expect(orderDetail_1_2_multiple_2.priceRatio).to.equal(
+          priceRatio_1_2_multiple_2
+        );
       });
 
       it('should assign current order as active order', async function () {
-        const [sender] = await ethers.getSigners();
-        const { hardhatTestContract, hardhatToken1 } = await loadFixture(
+        const { hardhatTestContract } = await loadFixture(
           deployOrderBookFixture
         );
-        await hardhatToken1.mintToken(sender.address, 1000);
-        await hardhatToken1.approve(hardhatTestContract.address, 10);
-
-        await hardhatTestContract.connect(sender).makeOrder(10, 1, 1000, 1, 1);
-        const orderId = await hardhatTestContract.currentOrderId();
+        const { orderId_21 } = await loadFixture(makeOrderToken2Big1Fixture);
         const orderAciveDetail = await hardhatTestContract.activeOrders(
-          orderId.toString()
+          orderId_21.toString()
         );
         expect(orderAciveDetail.toString()).to.equal('1');
       });
 
       it('should assign current order as active order (multiple orders)', async function () {
-        const [sender] = await ethers.getSigners();
-        const {
-          hardhatTestContract,
-          hardhatToken1,
-          hardhatToken2,
-          hardhatOrderBook,
-        } = await loadFixture(deployOrderBookFixture);
-
-        await hardhatToken2.mintToken(sender.address, 1000);
-        await hardhatToken2.approve(hardhatTestContract.address, 750);
-        await hardhatTestContract.connect(sender).makeOrder(75, 20, 800, 1, 0);
-        const orderId1 = await hardhatTestContract.currentOrderId();
-        const orderActiveDetail1 = await hardhatTestContract.activeOrders(
-          orderId1.toString()
+        const { hardhatTestContract } = await loadFixture(
+          deployOrderBookFixture
         );
-        expect(orderActiveDetail1.toString()).to.equal('1');
-
-        await hardhatToken1.mintToken(sender.address, 1000);
-        await hardhatToken1.approve(hardhatTestContract.address, 750);
-        await hardhatTestContract.connect(sender).makeOrder(25, 11, 1800, 1, 1);
-        const orderId2 = await hardhatTestContract.currentOrderId();
-        const orderActiveDetail2 = await hardhatTestContract.activeOrders(
-          orderId2.toString()
+        const { orderId_1_2_multiple_1, orderId_1_2_multiple_2 } =
+          await loadFixture(makeOrderToken12Multiple);
+        const orderAciveDetail_11 = await hardhatTestContract.activeOrders(
+          orderId_1_2_multiple_1.toString()
         );
-        expect(orderActiveDetail2.toString()).to.equal('1');
+        expect(orderAciveDetail_11.toString()).to.equal('1');
+
+        const orderAciveDetail = await hardhatTestContract.activeOrders(
+          orderId_1_2_multiple_2.toString()
+        );
+        expect(orderAciveDetail.toString()).to.equal('1');
       });
 
       it('should emit OfferCreate event', async function () {
-        const [sender] = await ethers.getSigners();
         const {
-          hardhatTestContract,
-          hardhatToken1,
-          hardhatToken2,
-          hardhatOrderBook,
-        } = await loadFixture(deployOrderBookFixture);
+          sender_21,
+          token1Amt_21,
+          token2Amt_21,
+          priceRatio_21,
+          biggerToken_21,
+          sellingToken1_21,
+        } = await loadFixture(makeOrderToken2Big1Fixture);
 
-        await hardhatToken2.mintToken(sender.address, 1000);
-        await hardhatToken2.approve(hardhatTestContract.address, 750);
+        const { hardhatTestContract, hardhatToken1, hardhatToken2 } =
+          await loadFixture(deployOrderBookFixture);
+
+        await hardhatToken2.mintToken(sender_21.address, 1000);
+        await hardhatToken2.approve(hardhatTestContract.address, 10);
+
         await expect(
-          hardhatTestContract.connect(sender).makeOrder(75, 20, 800, 1, 0)
+          hardhatTestContract
+            .connect(sender_21)
+            .makeOrder(
+              token1Amt_21,
+              token2Amt_21,
+              priceRatio_21,
+              biggerToken_21,
+              sellingToken1_21
+            )
         )
           .to.emit(hardhatTestContract, 'OfferCreate')
           .withArgs(
             hardhatToken1.address,
             hardhatToken2.address,
-            0,
-            75,
-            20,
+            sellingToken1_21,
+            token1Amt_21,
+            token2Amt_21,
             2,
-            sender.address
+            sender_21.address
           );
       });
 
       it('should emit OfferCreate event (multiple orders)', async function () {
-        const [sender] = await ethers.getSigners();
         const {
-          hardhatTestContract,
-          hardhatToken1,
-          hardhatToken2,
-          hardhatOrderBook,
-        } = await loadFixture(deployOrderBookFixture);
+          sender_1_2_multiple,
+          token1Amt_1_2_multiple_1,
+          token2Amt_1_2_multiple_1,
+          priceRatio_1_2_multiple_1,
+          biggerToken_1_2_multiple_1,
+          sellingToken1_1_2_multiple_1,
+          token1Amt_1_2_multiple_2,
+          token2Amt_1_2_multiple_2,
+          priceRatio_1_2_multiple_2,
+          biggerToken_1_2_multiple_2,
+          sellingToken1_1_2_multiple_2,
+        } = await loadFixture(makeOrderToken12Multiple);
 
-        await hardhatToken2.mintToken(sender.address, 1000);
+        const { hardhatTestContract, hardhatToken1, hardhatToken2 } =
+          await loadFixture(deployOrderBookFixture);
+
+        await hardhatToken1.mintToken(sender_1_2_multiple.address, 1000);
+        await hardhatToken1.approve(hardhatTestContract.address, 750);
+        await hardhatToken2.mintToken(sender_1_2_multiple.address, 1000);
         await hardhatToken2.approve(hardhatTestContract.address, 750);
         await expect(
-          hardhatTestContract.connect(sender).makeOrder(75, 20, 800, 1, 0)
+          hardhatTestContract
+            .connect(sender_1_2_multiple)
+            .makeOrder(
+              token1Amt_1_2_multiple_1,
+              token2Amt_1_2_multiple_1,
+              priceRatio_1_2_multiple_1,
+              biggerToken_1_2_multiple_1,
+              sellingToken1_1_2_multiple_1
+            )
         )
           .to.emit(hardhatTestContract, 'OfferCreate')
           .withArgs(
             hardhatToken1.address,
             hardhatToken2.address,
-            0,
-            75,
-            20,
+            sellingToken1_1_2_multiple_1,
+            token1Amt_1_2_multiple_1,
+            token2Amt_1_2_multiple_1,
             2,
-            sender.address
+            sender_1_2_multiple.address
           );
 
-        await hardhatToken1.mintToken(sender.address, 1000);
-        await hardhatToken1.approve(hardhatTestContract.address, 750);
         await expect(
-          hardhatTestContract.connect(sender).makeOrder(75, 20, 800, 2, 1)
+          hardhatTestContract
+            .connect(sender_1_2_multiple)
+            .makeOrder(
+              token1Amt_1_2_multiple_2,
+              token2Amt_1_2_multiple_2,
+              priceRatio_1_2_multiple_2,
+              biggerToken_1_2_multiple_2,
+              sellingToken1_1_2_multiple_2
+            )
         )
           .to.emit(hardhatTestContract, 'OfferCreate')
           .withArgs(
             hardhatToken1.address,
             hardhatToken2.address,
-            1,
-            75,
-            20,
+            sellingToken1_1_2_multiple_2,
+            token1Amt_1_2_multiple_2,
+            token2Amt_1_2_multiple_2,
             3,
-            sender.address
+            sender_1_2_multiple.address
+          );
+      });
+    });
+
+    describe('cancel Order --- _cancel()', function () {
+      it('should revert with custom error "InactiveOrder" when no active order with given id', async function () {
+        const { hardhatTestContract } = await loadFixture(
+          deployOrderBookFixture
+        );
+        await expect(
+          hardhatTestContract.cancelOrder('100')
+        ).to.be.revertedWithCustomError(hardhatTestContract, 'InactiveOrder');
+      });
+
+      it('should not revert when order is active', async function () {
+        const [owner] = await ethers.getSigners();
+        const { hardhatTestContract, hardhatToken1 } = await loadFixture(
+          deployOrderBookFixture
+        );
+        await hardhatToken1.mintToken(owner.address, 1000);
+        await hardhatToken1.approve(hardhatTestContract.address, 10);
+        await hardhatTestContract.connect(owner).makeOrder(10, 1, 1000, 1, 1);
+        const orderId = await hardhatTestContract.currentOrderId();
+        const orderDetail = await hardhatTestContract.activeOrders(
+          orderId.toString()
+        );
+        await expect(hardhatTestContract.cancelOrder(orderId.toString())).to.not
+          .be.reverted;
+      });
+
+      it('should revert with custom error "NonOwnerCantCancelOrder" when called by non-woner', async function () {
+        const [owner, nonOwner] = await ethers.getSigners();
+        const { hardhatTestContract, hardhatToken1 } = await loadFixture(
+          deployOrderBookFixture
+        );
+        await hardhatToken1.mintToken(owner.address, 1000);
+        await hardhatToken1.approve(hardhatTestContract.address, 10);
+        await hardhatTestContract.connect(owner).makeOrder(10, 1, 1000, 1, 1);
+        const orderId = await hardhatTestContract.currentOrderId();
+        const orderDetail = await hardhatTestContract.activeOrders(
+          orderId.toString()
+        );
+        await expect(
+          hardhatTestContract.connect(nonOwner).cancelOrder(orderId.toString())
+        ).to.be.revertedWithCustomError(
+          hardhatTestContract,
+          'NonOwnerCantCancelOrder'
+        );
+      });
+
+      it('should not revert when called by owoner', async function () {
+        const [owner] = await ethers.getSigners();
+        const { hardhatTestContract, hardhatToken1 } = await loadFixture(
+          deployOrderBookFixture
+        );
+        await hardhatToken1.mintToken(owner.address, 1000);
+        await hardhatToken1.approve(hardhatTestContract.address, 10);
+        await hardhatTestContract.connect(owner).makeOrder(10, 1, 1000, 1, 1);
+        const orderId = await hardhatTestContract.currentOrderId();
+        const orderDetail = await hardhatTestContract.activeOrders(
+          orderId.toString()
+        );
+        await expect(
+          hardhatTestContract.connect(owner).cancelOrder(orderId.toString())
+        ).to.not.be.reverted;
+      });
+
+      it('should select correct sellingToken1 when token1 is selling value, (1)', async function () {
+        const [owner] = await ethers.getSigners();
+        const { hardhatTestContract, hardhatToken1 } = await loadFixture(
+          deployOrderBookFixture
+        );
+        await hardhatToken1.mintToken(owner.address, 1000);
+        await hardhatToken1.approve(hardhatTestContract.address, 10);
+        await hardhatTestContract.connect(owner).makeOrder(10, 1, 1000, 1, 1);
+        const orderId = await hardhatTestContract.currentOrderId();
+        await hardhatTestContract
+          .connect(owner)
+          .cancelOrder(orderId.toString());
+        expect((await hardhatTestContract.selectedToken()).toString()).to.equal(
+          '1'
+        );
+      });
+
+      it('should select correct sellingToken1 when token1 is selling value, (0)', async function () {
+        const [owner] = await ethers.getSigners();
+        const { hardhatTestContract, hardhatToken2 } = await loadFixture(
+          deployOrderBookFixture
+        );
+        await hardhatToken2.mintToken(owner.address, 1000);
+        await hardhatToken2.approve(hardhatTestContract.address, 10);
+        await hardhatTestContract.connect(owner).makeOrder(10, 1, 1000, 1, 0);
+        const orderId = await hardhatTestContract.currentOrderId();
+        await hardhatTestContract
+          .connect(owner)
+          .cancelOrder(orderId.toString());
+        expect((await hardhatTestContract.selectedToken()).toString()).to.equal(
+          '0'
+        );
+      });
+
+      it('should select the correct escrowed token when token for sell is 1 and deposit tokens in owner account', async function () {
+        const [owner] = await ethers.getSigners();
+        const { hardhatTestContract, hardhatToken1 } = await loadFixture(
+          deployOrderBookFixture
+        );
+        await hardhatToken1.mintToken(owner.address, 1000);
+        await hardhatToken1.approve(hardhatTestContract.address, 100);
+        const sellingToken1 = 1;
+        await hardhatTestContract
+          .connect(owner)
+          .makeOrder(25, 1, 1000, 1, sellingToken1);
+        const orderId = await hardhatTestContract.currentOrderId();
+        await hardhatTestContract
+          .connect(owner)
+          .cancelOrder(orderId.toString());
+        const balance = await hardhatToken1.balanceOf(owner.address);
+        expect(balance).to.equal(1000);
+      });
+
+      it('should select the correct escrowed token when token for sell is 2 and deposit tokens in owner account', async function () {
+        const [owner] = await ethers.getSigners();
+        const { hardhatTestContract, hardhatToken2 } = await loadFixture(
+          deployOrderBookFixture
+        );
+        await hardhatToken2.mintToken(owner.address, 275);
+        await hardhatToken2.approve(hardhatTestContract.address, 100);
+        const sellingToken1 = 0;
+        await hardhatTestContract
+          .connect(owner)
+          .makeOrder(10, 17, 1000, 1, sellingToken1);
+        const orderId = await hardhatTestContract.currentOrderId();
+        await hardhatTestContract
+          .connect(owner)
+          .cancelOrder(orderId.toString());
+        const balance = await hardhatToken2.balanceOf(owner.address);
+        expect(balance).to.equal(275);
+      });
+
+      it('should delete order from "orders" when successful', async function () {
+        const [owner] = await ethers.getSigners();
+        const { hardhatTestContract, hardhatToken2 } = await loadFixture(
+          deployOrderBookFixture
+        );
+        await hardhatToken2.mintToken(owner.address, 275);
+        await hardhatToken2.approve(hardhatTestContract.address, 100);
+        const sellingToken1 = 0;
+        await hardhatTestContract
+          .connect(owner)
+          .makeOrder(10, 17, 1000, 1, sellingToken1);
+        const orderId = await hardhatTestContract.currentOrderId();
+        await hardhatTestContract
+          .connect(owner)
+          .cancelOrder(orderId.toString());
+
+        const orderDetails = await hardhatTestContract.orders(
+          orderId.toString()
+        );
+        expect(orderDetails.sellingTokenAmt.toString()).to.equal('0');
+        expect(orderDetails.buyingTokenAmt.toString()).to.equal('0');
+        expect(orderDetails.owner).to.equal(
+          '0x0000000000000000000000000000000000000000'
+        );
+        expect(orderDetails.sellingToken1).to.equal(0);
+        expect(orderDetails.biggerToken).to.equal(0);
+        expect(orderDetails.priceRatio).to.equal(0);
+      });
+
+      it('should change status to 0 in activeorders mapping', async function () {
+        const [owner] = await ethers.getSigners();
+        const { hardhatTestContract, hardhatToken2 } = await loadFixture(
+          deployOrderBookFixture
+        );
+        await hardhatToken2.mintToken(owner.address, 275);
+        await hardhatToken2.approve(hardhatTestContract.address, 100);
+        const sellingToken1 = 0;
+        await hardhatTestContract
+          .connect(owner)
+          .makeOrder(10, 17, 1000, 1, sellingToken1);
+        const orderId = await hardhatTestContract.currentOrderId();
+        await hardhatTestContract
+          .connect(owner)
+          .cancelOrder(orderId.toString());
+        expect(
+          await hardhatTestContract.activeOrders(orderId.toString())
+        ).to.equal('0');
+      });
+
+      it('should emit OrderCancelled event', async function () {
+        const [owner] = await ethers.getSigners();
+        const { hardhatTestContract, hardhatToken1, hardhatToken2 } =
+          await loadFixture(deployOrderBookFixture);
+        await hardhatToken2.mintToken(owner.address, 275);
+        await hardhatToken2.approve(hardhatTestContract.address, 100);
+        const sellingToken1 = 0;
+        await hardhatTestContract
+          .connect(owner)
+          .makeOrder(10, 17, 1000, 1, sellingToken1);
+        const orderId = await hardhatTestContract.currentOrderId();
+
+        await expect(
+          hardhatTestContract.connect(owner).cancelOrder(orderId.toString())
+        )
+          .to.emit(hardhatTestContract, 'OrderCancelled')
+          .withArgs(
+            orderId.toString(),
+            owner.address,
+            hardhatToken1.address,
+            hardhatToken2.address
+          );
+      });
+
+      it('should emit DeleteOffer event', async function () {
+        const [owner] = await ethers.getSigners();
+        const { hardhatTestContract, hardhatToken1, hardhatToken2 } =
+          await loadFixture(deployOrderBookFixture);
+        await hardhatToken2.mintToken(owner.address, 275);
+        await hardhatToken2.approve(hardhatTestContract.address, 100);
+        const sellingToken1 = 0;
+        await hardhatTestContract
+          .connect(owner)
+          .makeOrder(10, 17, 1000, 1, sellingToken1);
+        const orderId = await hardhatTestContract.currentOrderId();
+
+        await expect(
+          hardhatTestContract.connect(owner).cancelOrder(orderId.toString())
+        )
+          .to.emit(hardhatTestContract, 'DeleteOffer')
+          .withArgs(
+            orderId.toString(),
+            owner.address,
+            hardhatToken1.address,
+            hardhatToken2.address
           );
       });
     });
