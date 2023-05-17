@@ -3,10 +3,10 @@ pragma solidity ^0.8.18;
 
 import "../Orderbook.sol";
 
-contract TestContract is OrderBook {
+contract OrderbookMock is OrderBook {
     uint256 public currentOrderId;
     uint256 public selectedToken;
-
+    bool public orderDeleted;
 
     constructor(
         ERC20 _token1,
@@ -37,6 +37,12 @@ contract TestContract is OrderBook {
             sellingToken1
         ); // Call the internal function
         currentOrderId = result;
+        return result;
+    }
+
+    function buyOrder(uint256 id, uint128 quantity) external returns (bool) {
+        bool result = _buy(id, quantity); // Call the internal function
+        orderDeleted = result;
         return result;
     }
 }
