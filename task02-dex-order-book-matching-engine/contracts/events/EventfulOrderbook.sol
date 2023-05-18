@@ -35,8 +35,6 @@ contract EventfulOrderbook {
         ERC20 token2
     );
 
-    // ----
-
     /// @notice Emitted when an offer is updated due to a partial fill
     event OfferUpdate(uint256 indexed id, uint128 tok1Amt, uint128 tok2Amt);
 

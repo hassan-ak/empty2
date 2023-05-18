@@ -2,7 +2,7 @@
 pragma solidity ^0.8.18;
 
 /// @title Custom errors for Orderbook.sol
-/// @author Hassan Ali Khan
+/// @author Nolan D. Amblard
 contract OrderbookErrors {
     /// @notice Fees cannot be set to more than 50%;
     error InvalidFeeValue();

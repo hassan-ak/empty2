@@ -8,7 +8,7 @@ import "./errors/OrderbookErrors.sol";
 import "hardhat/console.sol";
 
 /// @title A decentralized orderbook
-/// @author Hassan Ali Khan
+/// @author Nolan D. Amblard
 /// @notice This contract is based on OasisDex
 contract OrderBook is EventfulOrderbook, OrderbookErrors, Ownable {
     ERC20 public token1;
