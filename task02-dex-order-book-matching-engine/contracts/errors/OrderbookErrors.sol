@@ -16,11 +16,11 @@ contract OrderbookErrors {
     /// @notice An error occured when transfering tokens from a user to the escrow.
     error TransferToEscrowError();
 
-    // --- //
+    /// @notice Cannot execute orderbook logic on an inactive order.
+    error InactiveOrder();
 
-    
-
-    
+    /// @notice An account which is not the owner of an order is not able to cancel it.
+    error NonOwnerCantCancelOrder();
 
     /// @notice Invalid purchase amount. Purchase quantity must be greater than 0.
     error ZeroBuyQuantity();
@@ -36,10 +36,4 @@ contract OrderbookErrors {
 
     /// @notice The transaction sending the buyer the escrowed tokens was reverted.
     error EscrowToBuyerError();
-
-    /// @notice An account which is not the owner of an order is not able to cancel it.
-    error NonOwnerCantCancelOrder();
-
-    /// @notice Cannot execute orderbook logic on an inactive order.
-    error InactiveOrder();
 }

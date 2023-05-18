@@ -1474,142 +1474,142 @@ describe('OrderBook contract', function () {
         expect(correctBalanceDeducted).to.be.true;
       });
 
-      // it('should select correct buyerPay token when token to sell is token 1', async function () {
-      //   const {
-      //     hardhatOrderbookMock,
-      //     orderId,
-      //     nonOwner,
-      //     quantity,
-      //     hardhatToken2,
-      //     _makerFee,
-      //     _takerFee,
-      //   } = await loadFixture(buyOrderToken1Fixture);
-      //   const initialBalance2 = await hardhatToken2.balanceOf(nonOwner.address);
-      //   await hardhatOrderbookMock
-      //     .connect(nonOwner)
-      //     .buyOrder(orderId.toString(), quantity);
-      //   const finalBalance2 = await hardhatToken2.balanceOf(nonOwner.address);
-      //   const balanceDiff2 = initialBalance2 - finalBalance2;
-      //   const correctBalanceDeducted2 = balanceDiff2 >= _takerFee + _makerFee;
-      //   expect(correctBalanceDeducted2).to.be.true;
-      // });
+      it('should select correct buyerPay token when token to sell is token 1', async function () {
+        const {
+          hardhatOrderbookMock,
+          orderId,
+          nonOwner,
+          quantity,
+          hardhatToken2,
+          _makerFee,
+          _takerFee,
+        } = await loadFixture(buyOrderToken1Fixture);
+        const initialBalance2 = await hardhatToken2.balanceOf(nonOwner.address);
+        await hardhatOrderbookMock
+          .connect(nonOwner)
+          .buyOrder(orderId.toString(), quantity);
+        const finalBalance2 = await hardhatToken2.balanceOf(nonOwner.address);
+        const balanceDiff2 = initialBalance2 - finalBalance2;
+        const correctBalanceDeducted2 = balanceDiff2 >= _takerFee + _makerFee;
+        expect(correctBalanceDeducted2).to.be.true;
+      });
 
-      // it('should select correct buyerPay token when token to sell is token 2', async function () {
-      //   const {
-      //     hardhatOrderbookMock,
-      //     orderId,
-      //     nonOwner,
-      //     quantity,
-      //     hardhatToken1,
-      //     _makerFee,
-      //     _takerFee,
-      //   } = await loadFixture(buyOrderToken2Fixture);
-      //   const initialBalance1 = await hardhatToken1.balanceOf(nonOwner.address);
-      //   await hardhatOrderbookMock
-      //     .connect(nonOwner)
-      //     .buyOrder(orderId.toString(), quantity);
-      //   const finalBalance1 = await hardhatToken1.balanceOf(nonOwner.address);
-      //   const balanceDiff1 = initialBalance1 - finalBalance1;
-      //   const correctBalanceDeducted1 = balanceDiff1 >= _takerFee + _makerFee;
-      //   expect(correctBalanceDeducted1).to.be.true;
-      // });
+      it('should select correct buyerPay token when token to sell is token 2', async function () {
+        const {
+          hardhatOrderbookMock,
+          orderId,
+          nonOwner,
+          quantity,
+          hardhatToken1,
+          _makerFee,
+          _takerFee,
+        } = await loadFixture(buyOrderToken2Fixture);
+        const initialBalance1 = await hardhatToken1.balanceOf(nonOwner.address);
+        await hardhatOrderbookMock
+          .connect(nonOwner)
+          .buyOrder(orderId.toString(), quantity);
+        const finalBalance1 = await hardhatToken1.balanceOf(nonOwner.address);
+        const balanceDiff1 = initialBalance1 - finalBalance1;
+        const correctBalanceDeducted1 = balanceDiff1 >= _takerFee + _makerFee;
+        expect(correctBalanceDeducted1).to.be.true;
+      });
 
-      // it('should deduct fee from buyer account', async function () {
-      //   const {
-      //     hardhatOrderbookMock,
-      //     orderId,
-      //     nonOwner,
-      //     quantity,
-      //     hardhatToken2,
-      //     _makerFee,
-      //     _takerFee,
-      //   } = await loadFixture(buyOrderToken1Fixture);
-      //   const initialBalance = await hardhatToken2.balanceOf(nonOwner.address);
-      //   await hardhatOrderbookMock
-      //     .connect(nonOwner)
-      //     .buyOrder(orderId.toString(), quantity);
-      //   const finalBalance = await hardhatToken2.balanceOf(nonOwner.address);
-      //   const balanceDiff = initialBalance - finalBalance;
-      //   const correctBalanceDeducted = balanceDiff >= _takerFee + _makerFee;
-      //   expect(correctBalanceDeducted).to.be.true;
-      // });
+      it('should deduct fee from buyer account', async function () {
+        const {
+          hardhatOrderbookMock,
+          orderId,
+          nonOwner,
+          quantity,
+          hardhatToken2,
+          _makerFee,
+          _takerFee,
+        } = await loadFixture(buyOrderToken1Fixture);
+        const initialBalance = await hardhatToken2.balanceOf(nonOwner.address);
+        await hardhatOrderbookMock
+          .connect(nonOwner)
+          .buyOrder(orderId.toString(), quantity);
+        const finalBalance = await hardhatToken2.balanceOf(nonOwner.address);
+        const balanceDiff = initialBalance - finalBalance;
+        const correctBalanceDeducted = balanceDiff >= _takerFee + _makerFee;
+        expect(correctBalanceDeducted).to.be.true;
+      });
 
-      // it('should revert when buyer lacks fund for transfer', async function () {
-      //   const [owner] = await ethers.getSigners();
-      //   const { hardhatOrderbookMock, hardhatToken1, hardhatToken2 } =
-      //     await loadFixture(deployOrderBookFixture);
-      //   await hardhatToken1.mintToken(owner.address, 100_000);
-      //   await hardhatToken1.approve(hardhatOrderbookMock.address, 75_000);
-      //   await hardhatToken2.mintToken(owner.address, 1000);
-      //   await hardhatToken2.approve(hardhatOrderbookMock.address, 500);
-      //   await hardhatOrderbookMock
-      //     .connect(owner)
-      //     .makeOrder(36000, 25000, 800, 1, 1);
-      //   const orderId = await hardhatOrderbookMock.currentOrderId();
-      //   await expect(
-      //     hardhatOrderbookMock
-      //       .connect(owner)
-      //       .buyOrder(orderId.toString(), 14500)
-      //   ).to.be.reverted;
-      // });
+      it('should revert when buyer lacks fund for transfer', async function () {
+        const [owner] = await ethers.getSigners();
+        const { hardhatOrderbookMock, hardhatToken1, hardhatToken2 } =
+          await loadFixture(deployOrderBookFixture);
+        await hardhatToken1.mintToken(owner.address, 100_000);
+        await hardhatToken1.approve(hardhatOrderbookMock.address, 75_000);
+        await hardhatToken2.mintToken(owner.address, 1000);
+        await hardhatToken2.approve(hardhatOrderbookMock.address, 500);
+        await hardhatOrderbookMock
+          .connect(owner)
+          .makeOrder(36000, 25000, 800, 1, 1);
+        const orderId = await hardhatOrderbookMock.currentOrderId();
+        await expect(
+          hardhatOrderbookMock
+            .connect(owner)
+            .buyOrder(orderId.toString(), 14500)
+        ).to.be.reverted;
+      });
 
-      // it('should revert when buyer lacks fund for transfer', async function () {
-      //   const [owner] = await ethers.getSigners();
-      //   const { hardhatOrderbookMock, hardhatToken1, hardhatToken2 } =
-      //     await loadFixture(deployOrderBookFixture);
-      //   await hardhatToken1.mintToken(owner.address, 100_000);
-      //   await hardhatToken1.approve(hardhatOrderbookMock.address, 75_000);
-      //   await hardhatToken2.mintToken(owner.address, 100_000);
-      //   await hardhatToken2.approve(hardhatOrderbookMock.address, 50_000);
-      //   await hardhatOrderbookMock
-      //     .connect(owner)
-      //     .makeOrder(36000, 25000, 800, 1, 1);
-      //   const orderId = await hardhatOrderbookMock.currentOrderId();
-      //   await expect(
-      //     hardhatOrderbookMock
-      //       .connect(owner)
-      //       .buyOrder(orderId.toString(), 14500)
-      //   ).to.not.be.reverted;
-      // });
+      it('should revert when buyer lacks fund for transfer', async function () {
+        const [owner] = await ethers.getSigners();
+        const { hardhatOrderbookMock, hardhatToken1, hardhatToken2 } =
+          await loadFixture(deployOrderBookFixture);
+        await hardhatToken1.mintToken(owner.address, 100_000);
+        await hardhatToken1.approve(hardhatOrderbookMock.address, 75_000);
+        await hardhatToken2.mintToken(owner.address, 100_000);
+        await hardhatToken2.approve(hardhatOrderbookMock.address, 50_000);
+        await hardhatOrderbookMock
+          .connect(owner)
+          .makeOrder(36000, 25000, 800, 1, 1);
+        const orderId = await hardhatOrderbookMock.currentOrderId();
+        await expect(
+          hardhatOrderbookMock
+            .connect(owner)
+            .buyOrder(orderId.toString(), 14500)
+        ).to.not.be.reverted;
+      });
 
-      // it('should calculate correct cost', async function () {
-      //   const {
-      //     hardhatOrderbookMock,
-      //     orderId,
-      //     nonOwner,
-      //     quantity,
-      //     hardhatToken2,
-      //     cost,
-      //     _takerFee,
-      //   } = await loadFixture(buyOrderToken1Fixture);
-      //   const initialBalance = await hardhatToken2.balanceOf(nonOwner.address);
-      //   await hardhatOrderbookMock
-      //     .connect(nonOwner)
-      //     .buyOrder(orderId.toString(), quantity);
-      //   const finalBalance = await hardhatToken2.balanceOf(nonOwner.address);
-      //   expect(initialBalance - finalBalance).to.equal(cost + _takerFee);
-      // });
+      it('should calculate correct cost', async function () {
+        const {
+          hardhatOrderbookMock,
+          orderId,
+          nonOwner,
+          quantity,
+          hardhatToken2,
+          cost,
+          _takerFee,
+        } = await loadFixture(buyOrderToken1Fixture);
+        const initialBalance = await hardhatToken2.balanceOf(nonOwner.address);
+        await hardhatOrderbookMock
+          .connect(nonOwner)
+          .buyOrder(orderId.toString(), quantity);
+        const finalBalance = await hardhatToken2.balanceOf(nonOwner.address);
+        expect(initialBalance - finalBalance).to.equal(cost + _takerFee);
+      });
 
-      // it('should deduct cost from buyer account', async function () {
-      //   const {
-      //     hardhatOrderbookMock,
-      //     orderId,
-      //     nonOwner,
-      //     quantity,
-      //     hardhatToken2,
-      //     cost,
-      //     _makerFee,
-      //     _takerFee,
-      //   } = await loadFixture(buyOrderToken1Fixture);
-      //   const initialBalance = await hardhatToken2.balanceOf(nonOwner.address);
-      //   await hardhatOrderbookMock
-      //     .connect(nonOwner)
-      //     .buyOrder(orderId.toString(), quantity);
-      //   const finalBalance = await hardhatToken2.balanceOf(nonOwner.address);
-      //   expect(initialBalance - finalBalance).to.equal(
-      //     cost + _makerFee - _makerFee + _takerFee
-      //   );
-      // });
+      it('should deduct cost from buyer account', async function () {
+        const {
+          hardhatOrderbookMock,
+          orderId,
+          nonOwner,
+          quantity,
+          hardhatToken2,
+          cost,
+          _makerFee,
+          _takerFee,
+        } = await loadFixture(buyOrderToken1Fixture);
+        const initialBalance = await hardhatToken2.balanceOf(nonOwner.address);
+        await hardhatOrderbookMock
+          .connect(nonOwner)
+          .buyOrder(orderId.toString(), quantity);
+        const finalBalance = await hardhatToken2.balanceOf(nonOwner.address);
+        expect(initialBalance - finalBalance).to.equal(
+          cost + _makerFee - _makerFee + _takerFee
+        );
+      });
 
       it('should deposit cost to seller account', async function () {
         const {

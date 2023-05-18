@@ -7,7 +7,6 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 /// @author Nolan D. Amblard
 /// @author Brian Goldblatt
 contract EventfulOrderbook {
-
     /// @notice Emitted when an offer is created
     /// @dev tokType representative boolean. 0 buy, 1 sell
     event OfferCreate(
@@ -20,12 +19,26 @@ contract EventfulOrderbook {
         address indexed maker
     );
 
-    /// @notice Emitted when an offer is updated due to a partial fill
-    event OfferUpdate(
+    /// @notice Emitted when an order is cancelled
+    event OrderCancelled(
         uint256 indexed id,
-        uint128 tok1Amt,
-        uint128 tok2Amt
+        address indexed maker,
+        ERC20 token1,
+        ERC20 token2
     );
+
+    /// @notice Emitted when an order is deleted (completely filled or cancelled)
+    event DeleteOffer(
+        uint256 indexed id,
+        address indexed maker,
+        ERC20 token1,
+        ERC20 token2
+    );
+
+    // ----
+
+    /// @notice Emitted when an offer is updated due to a partial fill
+    event OfferUpdate(uint256 indexed id, uint128 tok1Amt, uint128 tok2Amt);
 
     /// @notice Emitted when a taker fee is paid during the order fill process
     event TakerFeePaid(
@@ -53,21 +66,5 @@ contract EventfulOrderbook {
         uint256 indexed id,
         address indexed maker,
         address indexed taker
-    );
-
-    /// @notice Emitted when an order is deleted (completely filled or cancelled)
-    event DeleteOffer(
-        uint256 indexed id,
-        address indexed maker,
-        ERC20 token1,
-        ERC20 token2
-    );
-
-    /// @notice Emitted when an order is cancelled
-    event OrderCancelled(
-        uint256 indexed id,
-        address indexed maker,
-        ERC20 token1,
-        ERC20 token2
     );
 }
