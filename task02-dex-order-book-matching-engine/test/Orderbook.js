@@ -1,5 +1,3 @@
-// import { ethers } from "hardhat";
-
 const { expect } = require('chai');
 const { loadFixture } = require('@nomicfoundation/hardhat-network-helpers');
 
@@ -370,6 +368,7 @@ describe('OrderBook contract', function () {
       nonOwner,
       takerFee,
       makerFee,
+      feeAddr,
     } = await loadFixture(deployOrderBookFixture);
 
     const buyingTokenAmt = 25000;
@@ -413,6 +412,7 @@ describe('OrderBook contract', function () {
       hardhatToken2,
       _makerFee,
       _takerFee,
+      feeAddr,
     };
   }
 
@@ -1460,18 +1460,33 @@ describe('OrderBook contract', function () {
           hardhatToken2,
           _makerFee,
           _takerFee,
+          feeAddr,
         } = await loadFixture(buyOrderToken1Fixture);
-
-        const initialBalance = await hardhatToken2.balanceOf(nonOwner.address);
-
         await hardhatOrderbookMock
           .connect(nonOwner)
           .buyOrder(orderId.toString(), quantity);
-        const finalBalance = await hardhatToken2.balanceOf(nonOwner.address);
-        const balanceDiff = initialBalance - finalBalance;
-        const correctBalanceDeducted = balanceDiff >= _takerFee + _makerFee;
+        expect(await hardhatToken2.balanceOf(feeAddr)).to.equal(
+          _takerFee + _makerFee
+        );
+      });
 
-        expect(correctBalanceDeducted).to.be.true;
+      it('should deposit fee in feeAddr', async function () {
+        const {
+          hardhatOrderbookMock,
+          orderId,
+          nonOwner,
+          quantity,
+          hardhatToken2,
+          _makerFee,
+          _takerFee,
+          feeAddr,
+        } = await loadFixture(buyOrderToken1Fixture);
+        await hardhatOrderbookMock
+          .connect(nonOwner)
+          .buyOrder(orderId.toString(), quantity);
+        expect(await hardhatToken2.balanceOf(feeAddr)).to.equal(
+          _takerFee + _makerFee
+        );
       });
 
       it('should select correct buyerPay token when token to sell is token 1', async function () {
