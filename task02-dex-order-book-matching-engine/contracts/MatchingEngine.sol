@@ -5,6 +5,7 @@ import "./Orderbook.sol";
 import "./errors/MatchingEngineErrors.sol";
 import "./events/EventfulMatchingEngine.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "hardhat/console.sol";
 
 /// @title A price-time priority matching engine
 /// @author Nolan D. Amblard
@@ -741,139 +742,139 @@ contract MatchingEngine is
         }
     }
 
-    /// @notice Executes a taker order for the amount specified
-    /// @dev tokenAmt is the amount of the spending token
-    function take(
-        uint128 tokenAmt,
-        uint8 spendingToken1
-    ) external nonReentrant {
-        if (spendingToken1 == 1) {
-            // Using token1 to buy token2; search through bids
-            Node memory curr = bids[bids[0].next];
-            while (
-                curr.id != 0 && // If curr.id is 0, then we have gone through all the asks
-                tokenAmt != 0
-            ) {
-                uint128 buyAmt = tokenAmt < orders[curr.id].buyingTokenAmt
-                    ? tokenAmt
-                    : orders[curr.id].buyingTokenAmt;
-                if (_buy(curr.id, buyAmt)) {
-                    // If the order was completely filled, remove it from dll and delete it from array
-                    bids[bids[curr.id].next].prev = bids[curr.id].prev;
-                    bids[bids[curr.id].prev].next = bids[curr.id].next;
-                    delete bids[curr.id];
-                }
-                tokenAmt -= buyAmt;
-                // Get next best bid
-                curr = bids[curr.next];
-            }
-        } else {
-            // Using token2 to buy token1; Search through asks
-            Node memory curr = asks[asks[0].next];
-            while (
-                curr.id != 0 && // If curr.id is 0, then we have gone through all the asks
-                tokenAmt != 0
-            ) {
-                uint128 buyAmt = tokenAmt < orders[curr.id].buyingTokenAmt
-                    ? tokenAmt
-                    : orders[curr.id].buyingTokenAmt;
-                if (_buy(curr.id, buyAmt)) {
-                    // If the order was completely filled, remove it from dll and delete it from array
-                    asks[asks[curr.id].next].prev = asks[curr.id].prev;
-                    asks[asks[curr.id].prev].next = asks[curr.id].next;
-                    delete asks[curr.id];
-                }
-                tokenAmt -= buyAmt;
-                // Get next best bid
-                curr = asks[curr.next];
-            }
-        }
+    // /// @notice Executes a taker order for the amount specified
+    // /// @dev tokenAmt is the amount of the spending token
+    // function take(
+    //     uint128 tokenAmt,
+    //     uint8 spendingToken1
+    // ) external nonReentrant {
+    //     if (spendingToken1 == 1) {
+    //         // Using token1 to buy token2; search through bids
+    //         Node memory curr = bids[bids[0].next];
+    //         while (
+    //             curr.id != 0 && // If curr.id is 0, then we have gone through all the asks
+    //             tokenAmt != 0
+    //         ) {
+    //             uint128 buyAmt = tokenAmt < orders[curr.id].buyingTokenAmt
+    //                 ? tokenAmt
+    //                 : orders[curr.id].buyingTokenAmt;
+    //             if (_buy(curr.id, buyAmt)) {
+    //                 // If the order was completely filled, remove it from dll and delete it from array
+    //                 bids[bids[curr.id].next].prev = bids[curr.id].prev;
+    //                 bids[bids[curr.id].prev].next = bids[curr.id].next;
+    //                 delete bids[curr.id];
+    //             }
+    //             tokenAmt -= buyAmt;
+    //             // Get next best bid
+    //             curr = bids[curr.next];
+    //         }
+    //     } else {
+    //         // Using token2 to buy token1; Search through asks
+    //         Node memory curr = asks[asks[0].next];
+    //         while (
+    //             curr.id != 0 && // If curr.id is 0, then we have gone through all the asks
+    //             tokenAmt != 0
+    //         ) {
+    //             uint128 buyAmt = tokenAmt < orders[curr.id].buyingTokenAmt
+    //                 ? tokenAmt
+    //                 : orders[curr.id].buyingTokenAmt;
+    //             if (_buy(curr.id, buyAmt)) {
+    //                 // If the order was completely filled, remove it from dll and delete it from array
+    //                 asks[asks[curr.id].next].prev = asks[curr.id].prev;
+    //                 asks[asks[curr.id].prev].next = asks[curr.id].next;
+    //                 delete asks[curr.id];
+    //             }
+    //             tokenAmt -= buyAmt;
+    //             // Get next best bid
+    //             curr = asks[curr.next];
+    //         }
+    //     }
 
-        emit TakerOrder(tokenAmt, spendingToken1);
-    }
+    //     emit TakerOrder(tokenAmt, spendingToken1);
+    // }
 
-    /// @notice Public entrypoint for canceling an order
-    /// @dev Removes the order from its respective DLL
-    function cancelOrder(uint256 id) external nonReentrant {
-        if (_cancel(id) == 1) {
-            // sellingToken1 == 1; remove from asks
-            asks[asks[id].next].prev = asks[id].prev;
-            asks[asks[id].prev].next = asks[id].next;
-            delete asks[id];
-        } else {
-            bids[bids[id].next].prev = bids[id].prev;
-            bids[bids[id].prev].next = bids[id].next;
-            delete bids[id];
-        }
-    }
+    // /// @notice Public entrypoint for canceling an order
+    // /// @dev Removes the order from its respective DLL
+    // function cancelOrder(uint256 id) external nonReentrant {
+    //     if (_cancel(id) == 1) {
+    //         // sellingToken1 == 1; remove from asks
+    //         asks[asks[id].next].prev = asks[id].prev;
+    //         asks[asks[id].prev].next = asks[id].next;
+    //         delete asks[id];
+    //     } else {
+    //         bids[bids[id].next].prev = bids[id].prev;
+    //         bids[bids[id].prev].next = bids[id].next;
+    //         delete bids[id];
+    //     }
+    // }
 
-    /// @notice Executes an immediate or cancel (IoC) order for the amount specified for less than the price specified
-    /// @notice IoC orders can execute partial fills
-    function immediateOrCancel(
-        uint128 token1Amt,
-        uint128 token2Amt,
-        uint8 sellingToken1
-    ) external nonReentrant {
-        uint8 biggerToken = 1; // Flag to keep track of which token has a bigger quantity
-        uint256 priceRatio;
-        if (token1Amt > token2Amt) {
-            priceRatio = (token1Amt * 1_000_000_000_000_000) / token2Amt;
-        } else {
-            biggerToken = 2;
-            priceRatio = (token2Amt * 1_000_000_000_000_000) / token1Amt;
-        }
+    // /// @notice Executes an immediate or cancel (IoC) order for the amount specified for less than the price specified
+    // /// @notice IoC orders can execute partial fills
+    // function immediateOrCancel(
+    //     uint128 token1Amt,
+    //     uint128 token2Amt,
+    //     uint8 sellingToken1
+    // ) external nonReentrant {
+    //     uint8 biggerToken = 1; // Flag to keep track of which token has a bigger quantity
+    //     uint256 priceRatio;
+    //     if (token1Amt > token2Amt) {
+    //         priceRatio = (token1Amt * 1_000_000_000_000_000) / token2Amt;
+    //     } else {
+    //         biggerToken = 2;
+    //         priceRatio = (token2Amt * 1_000_000_000_000_000) / token1Amt;
+    //     }
 
-        (uint128 token1AmtNew, uint128 token2AmtNew) = _buyAmountLessThanRatio(
-            priceRatio,
-            biggerToken,
-            sellingToken1,
-            token1Amt,
-            token2Amt
-        );
+    //     (uint128 token1AmtNew, uint128 token2AmtNew) = _buyAmountLessThanRatio(
+    //         priceRatio,
+    //         biggerToken,
+    //         sellingToken1,
+    //         token1Amt,
+    //         token2Amt
+    //     );
 
-        emit IoCOrder(
-            token1Amt - token1AmtNew,
-            token2Amt - token2AmtNew,
-            sellingToken1
-        );
-    }
+    //     emit IoCOrder(
+    //         token1Amt - token1AmtNew,
+    //         token2Amt - token2AmtNew,
+    //         sellingToken1
+    //     );
+    // }
 
-    /// @notice Attempts to execute a fill or kill (FoC) order for the amount specified for less than the price specified
-    /// @notice FoC orders will revert if full amount isn't executed
-    function fillOrKill(
-        uint128 token1Amt,
-        uint128 token2Amt,
-        uint8 sellingToken1
-    ) external nonReentrant {
-        uint8 biggerToken = 1; // Flag to keep track of which token has a bigger quantity
-        uint256 priceRatio;
-        if (token1Amt > token2Amt) {
-            priceRatio = (token1Amt * 1_000_000_000_000_000) / token2Amt;
-        } else {
-            biggerToken = 2;
-            priceRatio = (token2Amt * 1_000_000_000_000_000) / token1Amt;
-        }
+    // /// @notice Attempts to execute a fill or kill (FoC) order for the amount specified for less than the price specified
+    // /// @notice FoC orders will revert if full amount isn't executed
+    // function fillOrKill(
+    //     uint128 token1Amt,
+    //     uint128 token2Amt,
+    //     uint8 sellingToken1
+    // ) external nonReentrant {
+    //     uint8 biggerToken = 1; // Flag to keep track of which token has a bigger quantity
+    //     uint256 priceRatio;
+    //     if (token1Amt > token2Amt) {
+    //         priceRatio = (token1Amt * 1_000_000_000_000_000) / token2Amt;
+    //     } else {
+    //         biggerToken = 2;
+    //         priceRatio = (token2Amt * 1_000_000_000_000_000) / token1Amt;
+    //     }
 
-        (uint128 token1AmtNew, uint128 token2AmtNew) = _buyAmountLessThanRatio(
-            priceRatio,
-            biggerToken,
-            sellingToken1,
-            token1Amt,
-            token2Amt
-        );
+    //     (uint128 token1AmtNew, uint128 token2AmtNew) = _buyAmountLessThanRatio(
+    //         priceRatio,
+    //         biggerToken,
+    //         sellingToken1,
+    //         token1Amt,
+    //         token2Amt
+    //     );
 
-        // If whole quantity of order didn't execute, revert the order
-        if (sellingToken1 == 1) {
-            if (token1AmtNew != 0) revert FillOrKillNotFilled();
-        } else {
-            // Selling token2
-            if (token2AmtNew != 0) revert FillOrKillNotFilled();
-        }
+    //     // If whole quantity of order didn't execute, revert the order
+    //     if (sellingToken1 == 1) {
+    //         if (token1AmtNew != 0) revert FillOrKillNotFilled();
+    //     } else {
+    //         // Selling token2
+    //         if (token2AmtNew != 0) revert FillOrKillNotFilled();
+    //     }
 
-        emit FoKOrder(
-            token1Amt - token1AmtNew,
-            token2Amt - token2AmtNew,
-            sellingToken1
-        );
-    }
+    //     emit FoKOrder(
+    //         token1Amt - token1AmtNew,
+    //         token2Amt - token2AmtNew,
+    //         sellingToken1
+    //     );
+    // }
 }
