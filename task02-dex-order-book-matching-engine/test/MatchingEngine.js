@@ -64,7 +64,7 @@ describe('MatchingEngine contract', function () {
   }
 
   describe('On Contract Deployment', function () {
-    it('===> should initialize bids correctly', async function () {
+    it('should initialize bids correctly', async function () {
       const { hardhatMatchingEngineMock } = await loadFixture(
         deployMatchingEngineMockFixture
       );
@@ -72,7 +72,7 @@ describe('MatchingEngine contract', function () {
       expect(bids.id, bids.prev, bids.next).to.equal(0, 0, 0);
     });
 
-    it('===> should initialize asks correctly', async function () {
+    it('should initialize asks correctly', async function () {
       const { hardhatMatchingEngineMock } = await loadFixture(
         deployMatchingEngineMockFixture
       );
@@ -83,7 +83,7 @@ describe('MatchingEngine contract', function () {
 
   describe('On Contract Execution', function () {
     describe('Insert First Order --- _insertFirstOrder()', function () {
-      it('===> should insert a bid order into the bids DLL correctly', async function () {
+      it('should insert a bid order into the bids DLL correctly', async function () {
         const { hardhatMatchingEngineMock } = await loadFixture(
           deployMatchingEngineMockFixture
         );
@@ -103,7 +103,7 @@ describe('MatchingEngine contract', function () {
         );
       });
 
-      it('===> should insert a bid order into the bids DLL correctly', async function () {
+      it('should insert an ask order into the asks DLL correctly', async function () {
         const { hardhatMatchingEngineMock } = await loadFixture(
           deployMatchingEngineMockFixture
         );
@@ -124,558 +124,652 @@ describe('MatchingEngine contract', function () {
       });
     });
 
-    describe('Insert Order at a Position --- _insertOrderAtPosition()', function () {
-      it('should insert a bid order into the bids DLL correctly at a position', async function () {
-        const { hardhatMatchingEngineMock } = await loadFixture(
-          deployMatchingEngineMockFixture
-        );
-
-        const token1Amt = 250;
-        const sellingToken1 = 0;
-        const dllPosition = 0;
-        for (let token2Amt = 500; token2Amt < 525; token2Amt += 5) {
-          await hardhatMatchingEngineMock.makerOrder(
-            token1Amt,
-            token2Amt,
-            sellingToken1,
-            dllPosition
+    describe('Cancels the order --- cancelOrder()', function () {
+      describe('Cancels a bid order', function () {
+        it('should delete an order and remove bid from DLL correctly', async function () {
+          const { hardhatMatchingEngineMock } = await loadFixture(
+            deployMatchingEngineMockFixture
           );
-        }
-        // Here e have 5 orders added to bids
-        // each one is uniqe
-        // so new entry for each order
-        // bids maping contain 7 data points 5 for orders one for initilization and one empty
-        // now add another order with same specification as order 2 (token2 amount 510)
-        await hardhatMatchingEngineMock.makerOrder(
-          token1Amt,
-          510,
-          sellingToken1,
-          dllPosition
-        );
-        // Now lets have look at the posotion at whihc this new order will be placed
-        // it is obvious the order will be placed at postion 4
-        // doing it manually to not chnage the contract in any capacity
-        // Now we only need to analize bids with id 7,4,3
-        const bids_3 = await hardhatMatchingEngineMock.bids(3);
-        const bids_4 = await hardhatMatchingEngineMock.bids(4);
-        const bids_7 = await hardhatMatchingEngineMock.bids(7);
-        expect(bids_7.id, bids_7.prev, bids_7.next).to.equal(
-          7,
-          bids_4.id,
-          bids_3.id
-        );
-        expect(bids_4.next).to.equal(bids_7.id);
-        expect(bids_3.prev).to.equal(bids_7.id);
+          await hardhatMatchingEngineMock.makerOrder(5, 1, 0, 0);
+          await hardhatMatchingEngineMock.makerOrder(6, 1, 0, 0);
+
+          await hardhatMatchingEngineMock.cancelOrder(2);
+
+          const orderDetail = await hardhatMatchingEngineMock.orders(2);
+          const bid = await hardhatMatchingEngineMock.bids(2);
+          expect(orderDetail.priceRatio.toString()).to.equal('0');
+          expect(
+            bid.id.toString(),
+            bid.prev.toString(),
+            bid.next.toString()
+          ).to.equal('0', '0', '0');
+        });
+
+        it('should delete an order and update bid in DLL correctly', async function () {
+          const { hardhatMatchingEngineMock } = await loadFixture(
+            deployMatchingEngineMockFixture
+          );
+          await hardhatMatchingEngineMock.makerOrder(5, 1, 0, 0);
+          await hardhatMatchingEngineMock.makerOrder(6, 1, 0, 0);
+
+          await hardhatMatchingEngineMock.cancelOrder(2);
+
+          const orderDetail = await hardhatMatchingEngineMock.orders(2);
+          const bid0 = await hardhatMatchingEngineMock.bids(0);
+          const bid2 = await hardhatMatchingEngineMock.bids(2);
+          const bid3 = await hardhatMatchingEngineMock.bids(3);
+
+          expect(orderDetail.priceRatio.toString()).to.equal('0');
+          expect(
+            bid0.id.toString(),
+            bid0.prev.toString(),
+            bid0.next.toString()
+          ).to.equal('0', '3', '3');
+          expect(
+            bid2.id.toString(),
+            bid2.prev.toString(),
+            bid2.next.toString()
+          ).to.equal('0', '0', '0');
+          expect(
+            bid3.id.toString(),
+            bid3.prev.toString(),
+            bid3.next.toString()
+          ).to.equal('3', '0', '0');
+        });
       });
 
-      it('should insert a ask order into the bids DLL correctly at a position', async function () {
-        const { hardhatMatchingEngineMock } = await loadFixture(
-          deployMatchingEngineMockFixture
-        );
-
-        const token1Amt = 250;
-        const sellingToken1 = 1;
-        const dllPosition = 0;
-        for (let token2Amt = 500; token2Amt < 525; token2Amt += 5) {
-          await hardhatMatchingEngineMock.makerOrder(
-            token1Amt,
-            token2Amt,
-            sellingToken1,
-            dllPosition
+      describe('Cancels an ask order', function () {
+        it('should delete an order and remove ask from DLL correctly', async function () {
+          const { hardhatMatchingEngineMock } = await loadFixture(
+            deployMatchingEngineMockFixture
           );
-        }
+          await hardhatMatchingEngineMock.makerOrder(5, 1, 1, 0);
+          await hardhatMatchingEngineMock.makerOrder(6, 1, 1, 0);
 
-        await hardhatMatchingEngineMock.makerOrder(
-          token1Amt,
-          510,
-          sellingToken1,
-          dllPosition
-        );
+          await hardhatMatchingEngineMock.cancelOrder(2);
 
-        const asks_4 = await hardhatMatchingEngineMock.asks(4);
-        const asks_5 = await hardhatMatchingEngineMock.asks(5);
-        const asks_7 = await hardhatMatchingEngineMock.asks(7);
-        expect(asks_7.id, asks_7.prev, asks_7.next).to.equal(
-          7,
-          asks_4.id,
-          asks_5.id
-        );
-        expect(asks_5.prev).to.equal(asks_7.id);
-        expect(asks_4.next).to.equal(asks_7.id);
-      });
-    });
+          const orderDetail = await hardhatMatchingEngineMock.orders(2);
+          const ask = await hardhatMatchingEngineMock.asks(2);
+          expect(orderDetail.priceRatio.toString()).to.equal('0');
+          expect(
+            ask.id.toString(),
+            ask.prev.toString(),
+            ask.next.toString()
+          ).to.equal('0', '0', '0');
+        });
 
-    describe('Find correct position --- _findInsertPosition()', function () {
-      it('should calculate correctly  (bid - list empty)', async function () {
-        const { hardhatMatchingEngineMock } = await loadFixture(
-          deployMatchingEngineMockFixture
-        );
-        await hardhatMatchingEngineMock.makerOrder(1, 60, 0, 0);
-
-        let bid = await hardhatMatchingEngineMock.bids(2);
-        expect(bid.next).to.equal(0);
-      });
-
-      it('should calculate correctly  (ask - list empty)', async function () {
-        const { hardhatMatchingEngineMock } = await loadFixture(
-          deployMatchingEngineMockFixture
-        );
-        await hardhatMatchingEngineMock.makerOrder(1, 60, 0, 0);
-
-        let ask = await hardhatMatchingEngineMock.asks(2);
-        expect(ask.next).to.equal(0);
-      });
-
-      it('should calculate correctly  (bid - biggerToken : 1 and ratio : worst )', async function () {
-        const { hardhatMatchingEngineMock } = await loadFixture(
-          deployMatchingEngineMockFixture
-        );
-        const token1Amt = 1;
-        const sellingToken1 = 0;
-        const dllPosition = 0;
-        const token1Amt1 = 256;
-
-        for (let token2Amt = 200; token2Amt < 700; token2Amt += 100) {
-          await hardhatMatchingEngineMock.makerOrder(
-            token1Amt,
-            token2Amt,
-            sellingToken1,
-            dllPosition
+        it('should delete an order and update ask in DLL correctly', async function () {
+          const { hardhatMatchingEngineMock } = await loadFixture(
+            deployMatchingEngineMockFixture
           );
-        }
-        for (let token2Amt = 11; token2Amt < 35; token2Amt += 5) {
-          await hardhatMatchingEngineMock.makerOrder(
-            token1Amt1,
-            token2Amt,
-            sellingToken1,
-            dllPosition
-          );
-        }
+          await hardhatMatchingEngineMock.makerOrder(5, 1, 1, 0);
+          await hardhatMatchingEngineMock.makerOrder(6, 1, 1, 0);
 
-        await hardhatMatchingEngineMock.makerOrder(
-          token1Amt1,
-          13,
-          sellingToken1,
-          dllPosition
-        );
+          await hardhatMatchingEngineMock.cancelOrder(2);
 
-        let bid = await hardhatMatchingEngineMock.bids(12);
-        expect(bid.next).to.equal(7);
-      });
+          const orderDetail = await hardhatMatchingEngineMock.orders(2);
+          const ask0 = await hardhatMatchingEngineMock.asks(0);
+          const ask2 = await hardhatMatchingEngineMock.asks(2);
+          const ask3 = await hardhatMatchingEngineMock.asks(3);
 
-      it('should calculate correctly  (bid - biggerToken : 1 and ratio : better )', async function () {
-        const { hardhatMatchingEngineMock } = await loadFixture(
-          deployMatchingEngineMockFixture
-        );
-        const token1Amt = 1;
-        const sellingToken1 = 0;
-        const dllPosition = 0;
-        const token1Amt1 = 256;
-
-        for (let token2Amt = 200; token2Amt < 700; token2Amt += 100) {
-          await hardhatMatchingEngineMock.makerOrder(
-            token1Amt,
-            token2Amt,
-            sellingToken1,
-            dllPosition
-          );
-        }
-        for (let token2Amt = 11; token2Amt < 35; token2Amt += 5) {
-          await hardhatMatchingEngineMock.makerOrder(
-            token1Amt1,
-            token2Amt,
-            sellingToken1,
-            dllPosition
-          );
-        }
-
-        await hardhatMatchingEngineMock.makerOrder(
-          token1Amt1,
-          5,
-          sellingToken1,
-          dllPosition
-        );
-
-        let bid = await hardhatMatchingEngineMock.bids(12);
-        expect(bid.next).to.equal(0);
-      });
-
-      it('should calculate correctly  (bid - biggerToken : 2 and ratio : worst )', async function () {
-        const { hardhatMatchingEngineMock } = await loadFixture(
-          deployMatchingEngineMockFixture
-        );
-        const token1Amt = 1;
-        const sellingToken1 = 0;
-        const dllPosition = 0;
-        const token1Amt1 = 256;
-
-        for (let token2Amt = 200; token2Amt < 700; token2Amt += 100) {
-          await hardhatMatchingEngineMock.makerOrder(
-            token1Amt,
-            token2Amt,
-            sellingToken1,
-            dllPosition
-          );
-        }
-        for (let token2Amt = 11; token2Amt < 35; token2Amt += 5) {
-          await hardhatMatchingEngineMock.makerOrder(
-            token1Amt1,
-            token2Amt,
-            sellingToken1,
-            dllPosition
-          );
-        }
-
-        await hardhatMatchingEngineMock.makerOrder(
-          token1Amt,
-          350,
-          sellingToken1,
-          dllPosition
-        );
-
-        let bid = await hardhatMatchingEngineMock.bids(12);
-        expect(bid.next).to.equal(0);
-      });
-
-      it('should calculate correctly  (bid - biggerToken : 2 and ratio : better )', async function () {
-        const { hardhatMatchingEngineMock } = await loadFixture(
-          deployMatchingEngineMockFixture
-        );
-        const token1Amt = 1;
-        const sellingToken1 = 0;
-        const dllPosition = 0;
-        const token1Amt1 = 256;
-
-        for (let token2Amt = 200; token2Amt < 700; token2Amt += 100) {
-          await hardhatMatchingEngineMock.makerOrder(
-            token1Amt,
-            token2Amt,
-            sellingToken1,
-            dllPosition
-          );
-        }
-        for (let token2Amt = 11; token2Amt < 35; token2Amt += 5) {
-          await hardhatMatchingEngineMock.makerOrder(
-            token1Amt1,
-            token2Amt,
-            sellingToken1,
-            dllPosition
-          );
-        }
-
-        await hardhatMatchingEngineMock.makerOrder(
-          1,
-          350,
-          sellingToken1,
-          dllPosition
-        );
-
-        let bid = await hardhatMatchingEngineMock.bids(12);
-        expect(bid.next).to.equal(0);
-      });
-
-      it('should calculate correctly  (bid - biggerToken : 1 and no order with  biggerToken : 1)', async function () {
-        const { hardhatMatchingEngineMock } = await loadFixture(
-          deployMatchingEngineMockFixture
-        );
-        const token1Amt = 1;
-        const sellingToken1 = 0;
-        const dllPosition = 0;
-        const token1Amt1 = 256;
-
-        for (let token2Amt = 200; token2Amt < 700; token2Amt += 100) {
-          await hardhatMatchingEngineMock.makerOrder(
-            token1Amt,
-            token2Amt,
-            sellingToken1,
-            dllPosition
-          );
-        }
-
-        await hardhatMatchingEngineMock.makerOrder(
-          token1Amt1,
-          1,
-          sellingToken1,
-          dllPosition
-        );
-
-        let bid = await hardhatMatchingEngineMock.bids(7);
-        expect(bid.next).to.equal(0);
-      });
-
-      it('should calculate correctly  (bid - biggerToken : 2 and no order with  biggerToken : 2)', async function () {
-        const { hardhatMatchingEngineMock } = await loadFixture(
-          deployMatchingEngineMockFixture
-        );
-        const sellingToken1 = 0;
-        const dllPosition = 0;
-        const token1Amt1 = 256;
-
-        for (let token2Amt = 11; token2Amt < 35; token2Amt += 5) {
-          await hardhatMatchingEngineMock.makerOrder(
-            token1Amt1,
-            token2Amt,
-            sellingToken1,
-            dllPosition
-          );
-        }
-
-        await hardhatMatchingEngineMock.makerOrder(
-          token1Amt1,
-          500,
-          sellingToken1,
-          dllPosition
-        );
-
-        let bid = await hardhatMatchingEngineMock.bids(7);
-        expect(bid.next).to.equal(0);
-      });
-
-      it('should calculate correctly  (ask - biggerToken : 1 and ratio : worst )', async function () {
-        const { hardhatMatchingEngineMock } = await loadFixture(
-          deployMatchingEngineMockFixture
-        );
-        const token1Amt = 1;
-        const sellingToken1 = 1;
-        const dllPosition = 0;
-        const token1Amt1 = 256;
-
-        for (let token2Amt = 200; token2Amt < 700; token2Amt += 100) {
-          await hardhatMatchingEngineMock.makerOrder(
-            token1Amt,
-            token2Amt,
-            sellingToken1,
-            dllPosition
-          );
-        }
-        for (let token2Amt = 11; token2Amt < 35; token2Amt += 5) {
-          await hardhatMatchingEngineMock.makerOrder(
-            token1Amt1,
-            token2Amt,
-            sellingToken1,
-            dllPosition
-          );
-        }
-
-        await hardhatMatchingEngineMock.makerOrder(
-          token1Amt1,
-          13,
-          sellingToken1,
-          dllPosition
-        );
-
-        let ask = await hardhatMatchingEngineMock.asks(12);
-        expect(ask.next).to.equal(2);
-      });
-
-      it('should calculate correctly  (ask - biggerToken : 1 and ratio : better )', async function () {
-        const { hardhatMatchingEngineMock } = await loadFixture(
-          deployMatchingEngineMockFixture
-        );
-        const token1Amt = 1;
-        const sellingToken1 = 1;
-        const dllPosition = 0;
-        const token1Amt1 = 256;
-
-        for (let token2Amt = 200; token2Amt < 700; token2Amt += 100) {
-          await hardhatMatchingEngineMock.makerOrder(
-            token1Amt,
-            token2Amt,
-            sellingToken1,
-            dllPosition
-          );
-        }
-        for (let token2Amt = 11; token2Amt < 35; token2Amt += 5) {
-          await hardhatMatchingEngineMock.makerOrder(
-            token1Amt1,
-            token2Amt,
-            sellingToken1,
-            dllPosition
-          );
-        }
-
-        await hardhatMatchingEngineMock.makerOrder(
-          token1Amt1,
-          5,
-          sellingToken1,
-          dllPosition
-        );
-
-        let ask = await hardhatMatchingEngineMock.asks(12);
-        expect(ask.next).to.equal(2);
-      });
-
-      it('should calculate correctly  (ask - biggerToken : 2 and ratio : worst )', async function () {
-        const { hardhatMatchingEngineMock } = await loadFixture(
-          deployMatchingEngineMockFixture
-        );
-        const token1Amt = 1;
-        const sellingToken1 = 1;
-        const dllPosition = 0;
-        const token1Amt1 = 256;
-
-        for (let token2Amt = 200; token2Amt < 700; token2Amt += 100) {
-          await hardhatMatchingEngineMock.makerOrder(
-            token1Amt,
-            token2Amt,
-            sellingToken1,
-            dllPosition
-          );
-        }
-        for (let token2Amt = 11; token2Amt < 35; token2Amt += 5) {
-          await hardhatMatchingEngineMock.makerOrder(
-            token1Amt1,
-            token2Amt,
-            sellingToken1,
-            dllPosition
-          );
-        }
-
-        await hardhatMatchingEngineMock.makerOrder(
-          token1Amt,
-          350,
-          sellingToken1,
-          dllPosition
-        );
-
-        let ask = await hardhatMatchingEngineMock.asks(12);
-        expect(ask.next).to.equal(4);
-      });
-
-      it('should calculate correctly  (ask - biggerToken : 2 and ratio : better )', async function () {
-        const { hardhatMatchingEngineMock } = await loadFixture(
-          deployMatchingEngineMockFixture
-        );
-        const token1Amt = 1;
-        const sellingToken1 = 1;
-        const dllPosition = 0;
-        const token1Amt1 = 256;
-
-        for (let token2Amt = 200; token2Amt < 700; token2Amt += 100) {
-          await hardhatMatchingEngineMock.makerOrder(
-            token1Amt,
-            token2Amt,
-            sellingToken1,
-            dllPosition
-          );
-        }
-        for (let token2Amt = 11; token2Amt < 35; token2Amt += 5) {
-          await hardhatMatchingEngineMock.makerOrder(
-            token1Amt1,
-            token2Amt,
-            sellingToken1,
-            dllPosition
-          );
-        }
-
-        await hardhatMatchingEngineMock.makerOrder(
-          1,
-          420,
-          sellingToken1,
-          dllPosition
-        );
-
-        let ask = await hardhatMatchingEngineMock.asks(12);
-        expect(ask.next).to.equal(5);
-      });
-
-      it('should calculate correctly  (ask - biggerToken : 1 and no order with  biggerToken : 1)', async function () {
-        const { hardhatMatchingEngineMock } = await loadFixture(
-          deployMatchingEngineMockFixture
-        );
-        const token1Amt = 1;
-        const sellingToken1 = 1;
-        const dllPosition = 0;
-        const token1Amt1 = 256;
-
-        for (let token2Amt = 200; token2Amt < 700; token2Amt += 100) {
-          await hardhatMatchingEngineMock.makerOrder(
-            token1Amt,
-            token2Amt,
-            sellingToken1,
-            dllPosition
-          );
-        }
-
-        await hardhatMatchingEngineMock.makerOrder(
-          token1Amt1,
-          1,
-          sellingToken1,
-          dllPosition
-        );
-
-        let ask = await hardhatMatchingEngineMock.asks(7);
-        expect(ask.next).to.equal(0);
-      });
-
-      it('should calculate correctly  (ask - biggerToken : 2 and no order with  biggerToken : 2)', async function () {
-        const { hardhatMatchingEngineMock } = await loadFixture(
-          deployMatchingEngineMockFixture
-        );
-        const sellingToken1 = 1;
-        const dllPosition = 0;
-        const token1Amt1 = 256;
-
-        for (let token2Amt = 11; token2Amt < 35; token2Amt += 5) {
-          await hardhatMatchingEngineMock.makerOrder(
-            token1Amt1,
-            token2Amt,
-            sellingToken1,
-            dllPosition
-          );
-        }
-
-        await hardhatMatchingEngineMock.makerOrder(
-          token1Amt1,
-          500,
-          sellingToken1,
-          dllPosition
-        );
-
-        let ask = await hardhatMatchingEngineMock.asks(7);
-        expect(ask.next).to.equal(0);
+          expect(orderDetail.priceRatio.toString()).to.equal('0');
+          expect(
+            ask0.id.toString(),
+            ask0.prev.toString(),
+            ask0.next.toString()
+          ).to.equal('0', '3', '3');
+          expect(
+            ask2.id.toString(),
+            ask2.prev.toString(),
+            ask2.next.toString()
+          ).to.equal('0', '0', '0');
+          expect(
+            ask3.id.toString(),
+            ask3.prev.toString(),
+            ask3.next.toString()
+          ).to.equal('3', '0', '0');
+        });
       });
     });
 
-    it('should partially fill an ask order  (biggerToken : 1)', async function () {
-      const { hardhatMatchingEngineMock } = await loadFixture(
-        deployMatchingEngineMockFixture
-      );
-      // Place 2 bids
-      await hardhatMatchingEngineMock.makerOrder(6, 1, 1, 0);
-      await hardhatMatchingEngineMock.makerOrder(5, 1, 1, 0);
-      await hardhatMatchingEngineMock.makerOrder(3, 1, 1, 0);
+    describe('Taker order --- take()', function () {
+      describe('Selling Token 01', function () {
+        describe('Only one bid with bidAmount greater than token amount', function () {
+          it('should update bid order', async function () {
+            const { hardhatMatchingEngineMock } = await loadFixture(
+              deployMatchingEngineMockFixture
+            );
+            await hardhatMatchingEngineMock.makerOrder(15, 10, 0, 0);
+            const detailsInitial = await hardhatMatchingEngineMock.orders(2);
+            await hardhatMatchingEngineMock.take(2, 1);
+            const detailsFinal = await hardhatMatchingEngineMock.orders(2);
+            expect(detailsFinal.sellingTokenAmt).to.equal(
+              detailsInitial.sellingTokenAmt - 2
+            );
+          });
 
-      // Place 1 ask order
-      await hardhatMatchingEngineMock.makerOrder(4, 1, 0, 0);
+          it('should not delete bid from dll', async function () {
+            const { hardhatMatchingEngineMock } = await loadFixture(
+              deployMatchingEngineMockFixture
+            );
+            await hardhatMatchingEngineMock.makerOrder(15, 10, 0, 0);
+            await hardhatMatchingEngineMock.take(2, 1);
+            const bid = await hardhatMatchingEngineMock.bids(2);
+            expect(
+              bid.id.toString(),
+              bid.prev.toString(),
+              bid.next.toString()
+            ).to.not.equal('0', '0', '0');
+          });
 
-      const order1 = await hardhatMatchingEngineMock.orders(2);
-      const order2 = await hardhatMatchingEngineMock.orders(3);
-      const order3 = await hardhatMatchingEngineMock.orders(4);
-      const order5 = await hardhatMatchingEngineMock.orders(5);
+          it('should not update bid dll', async function () {
+            const { hardhatMatchingEngineMock } = await loadFixture(
+              deployMatchingEngineMockFixture
+            );
+            await hardhatMatchingEngineMock.makerOrder(15, 10, 0, 0);
+            const bidInital = await hardhatMatchingEngineMock.bids(2);
+            await hardhatMatchingEngineMock.take(2, 1);
+            const bidFinal = await hardhatMatchingEngineMock.bids(2);
+            expect(...bidInital).to.equal(...bidFinal);
+          });
+        });
 
-      console.log(
-        order1.sellingTokenAmt,
-        order1.buyingTokenAmt,
-        order1.priceRatio
-      );
-      console.log(
-        order2.sellingTokenAmt,
-        order2.buyingTokenAmt,
-        order2.priceRatio
-      );
-      console.log(
-        order3.sellingTokenAmt,
-        order3.buyingTokenAmt,
-        order3.priceRatio
-      );
-      console.log(
-        order5.sellingTokenAmt,
-        order5.buyingTokenAmt,
-        order5.priceRatio
-      );
+        describe('Only one bid with bidAmount equal to token amount', function () {
+          it('should delete bid order', async function () {
+            const { hardhatMatchingEngineMock } = await loadFixture(
+              deployMatchingEngineMockFixture
+            );
+            await hardhatMatchingEngineMock.makerOrder(15, 10, 0, 0);
+            await hardhatMatchingEngineMock.take(10, 1);
+            const details = await hardhatMatchingEngineMock.orders(2);
+            const detailsEmpty = await hardhatMatchingEngineMock.orders(0);
+            expect(...details).to.equal(...detailsEmpty);
+          });
 
-      // console.log(order3.sellingTokenAmt);
+          it('should update bid dll', async function () {
+            const { hardhatMatchingEngineMock } = await loadFixture(
+              deployMatchingEngineMockFixture
+            );
+            await hardhatMatchingEngineMock.makerOrder(15, 10, 0, 0);
+            await hardhatMatchingEngineMock.take(10, 1);
+            const bids = await hardhatMatchingEngineMock.bids(0);
+            expect(
+              bids.id.toString(),
+              bids.prev.toString(),
+              bids.next.toString()
+            ).to.equal('0', '0', '0');
+          });
+
+          it('should delete from bid dll', async function () {
+            const { hardhatMatchingEngineMock } = await loadFixture(
+              deployMatchingEngineMockFixture
+            );
+            await hardhatMatchingEngineMock.makerOrder(15, 10, 0, 0);
+
+            await hardhatMatchingEngineMock.take(10, 1);
+
+            const bids = await hardhatMatchingEngineMock.bids(2);
+            expect(
+              bids.id.toString(),
+              bids.prev.toString(),
+              bids.next.toString()
+            ).to.equal('0', '0', '0');
+          });
+        });
+
+        describe('Only one bid with bidAmount less than token amount', function () {
+          it('should delete bid order', async function () {
+            const { hardhatMatchingEngineMock } = await loadFixture(
+              deployMatchingEngineMockFixture
+            );
+            await hardhatMatchingEngineMock.makerOrder(15, 10, 0, 0);
+            await hardhatMatchingEngineMock.take(25, 1);
+            const details = await hardhatMatchingEngineMock.orders(2);
+            const detailsEmpty = await hardhatMatchingEngineMock.orders(0);
+            expect(...details).to.equal(...detailsEmpty);
+          });
+
+          it('should update bid dll', async function () {
+            const { hardhatMatchingEngineMock } = await loadFixture(
+              deployMatchingEngineMockFixture
+            );
+            await hardhatMatchingEngineMock.makerOrder(15, 10, 0, 0);
+            await hardhatMatchingEngineMock.take(25, 1);
+            const bids = await hardhatMatchingEngineMock.bids(0);
+            expect(
+              bids.id.toString(),
+              bids.prev.toString(),
+              bids.next.toString()
+            ).to.equal('0', '0', '0');
+          });
+
+          it('should delete from bid dll', async function () {
+            const { hardhatMatchingEngineMock } = await loadFixture(
+              deployMatchingEngineMockFixture
+            );
+            await hardhatMatchingEngineMock.makerOrder(15, 10, 0, 0);
+
+            await hardhatMatchingEngineMock.take(25, 1);
+
+            const bids = await hardhatMatchingEngineMock.bids(2);
+            expect(
+              bids.id.toString(),
+              bids.prev.toString(),
+              bids.next.toString()
+            ).to.equal('0', '0', '0');
+          });
+        });
+
+        describe('Mutiple bids & order fullfiled by single bid (bidAmount == tokenAmount)', function () {
+          it('should delete bid order', async function () {
+            const { hardhatMatchingEngineMock } = await loadFixture(
+              deployMatchingEngineMockFixture
+            );
+            await hardhatMatchingEngineMock.makerOrder(15, 13, 0, 0);
+            await hardhatMatchingEngineMock.makerOrder(15, 10, 0, 0);
+            await hardhatMatchingEngineMock.take(13, 1);
+            const details = await hardhatMatchingEngineMock.orders(2);
+            const detailsEmpty = await hardhatMatchingEngineMock.orders(0);
+            expect(...details).to.equal(...detailsEmpty);
+          });
+
+          it('should not change other bid orders', async function () {
+            const { hardhatMatchingEngineMock } = await loadFixture(
+              deployMatchingEngineMockFixture
+            );
+            await hardhatMatchingEngineMock.makerOrder(15, 13, 0, 0);
+            await hardhatMatchingEngineMock.makerOrder(15, 10, 0, 0);
+            const details1 = await hardhatMatchingEngineMock.orders(3);
+            await hardhatMatchingEngineMock.take(13, 1);
+            const details2 = await hardhatMatchingEngineMock.orders(3);
+            expect(...details1).to.equal(...details2);
+          });
+
+          it('should delete bid from bid dll', async function () {
+            const { hardhatMatchingEngineMock } = await loadFixture(
+              deployMatchingEngineMockFixture
+            );
+            await hardhatMatchingEngineMock.makerOrder(15, 13, 0, 0);
+            await hardhatMatchingEngineMock.makerOrder(15, 10, 0, 0);
+            await hardhatMatchingEngineMock.take(13, 1);
+            const bids = await hardhatMatchingEngineMock.bids(2);
+            expect(
+              bids.id.toString(),
+              bids.prev.toString(),
+              bids.next.toString()
+            ).to.equal('0', '0', '0');
+          });
+
+          it('should update bid dll', async function () {
+            const { hardhatMatchingEngineMock } = await loadFixture(
+              deployMatchingEngineMockFixture
+            );
+            await hardhatMatchingEngineMock.makerOrder(15, 13, 0, 0);
+            await hardhatMatchingEngineMock.makerOrder(15, 10, 0, 0);
+            await hardhatMatchingEngineMock.take(13, 1);
+            const bid0 = await hardhatMatchingEngineMock.bids(0);
+            const bid3 = await hardhatMatchingEngineMock.bids(3);
+
+            expect(
+              bid0.id.toString(),
+              bid0.prev.toString(),
+              bid0.next.toString()
+            ).to.equal('0', '3', '3');
+            expect(
+              bid3.id.toString(),
+              bid3.prev.toString(),
+              bid3.next.toString()
+            ).to.equal('3', '0', '0');
+          });
+        });
+
+        describe('Mutiple bids & order fullfiled by multiple bids', function () {
+          it('should delete compltely filled bid order', async function () {
+            const { hardhatMatchingEngineMock } = await loadFixture(
+              deployMatchingEngineMockFixture
+            );
+            await hardhatMatchingEngineMock.makerOrder(15, 13, 0, 0);
+            await hardhatMatchingEngineMock.makerOrder(15, 10, 0, 0);
+            await hardhatMatchingEngineMock.take(17, 1);
+            const details = await hardhatMatchingEngineMock.orders(2);
+            const detailsEmpty = await hardhatMatchingEngineMock.orders(0);
+            expect(...details).to.equal(...detailsEmpty);
+          });
+
+          it('should update partially filled bid orders', async function () {
+            const { hardhatMatchingEngineMock } = await loadFixture(
+              deployMatchingEngineMockFixture
+            );
+            await hardhatMatchingEngineMock.makerOrder(15, 13, 0, 0);
+            await hardhatMatchingEngineMock.makerOrder(15, 10, 0, 0);
+            const details1 = await hardhatMatchingEngineMock.orders(3);
+            await hardhatMatchingEngineMock.take(21, 1);
+            const details2 = await hardhatMatchingEngineMock.orders(3);
+            expect(details2.sellingTokenAmt).to.equal(
+              details1.sellingTokenAmt - 8
+            );
+          });
+
+          it('should delete bid from bid dll', async function () {
+            const { hardhatMatchingEngineMock } = await loadFixture(
+              deployMatchingEngineMockFixture
+            );
+            await hardhatMatchingEngineMock.makerOrder(15, 13, 0, 0);
+            await hardhatMatchingEngineMock.makerOrder(15, 10, 0, 0);
+            await hardhatMatchingEngineMock.take(21, 1);
+            const bids = await hardhatMatchingEngineMock.bids(2);
+            expect(
+              bids.id.toString(),
+              bids.prev.toString(),
+              bids.next.toString()
+            ).to.equal('0', '0', '0');
+          });
+
+          it('should update bid dll', async function () {
+            const { hardhatMatchingEngineMock } = await loadFixture(
+              deployMatchingEngineMockFixture
+            );
+            await hardhatMatchingEngineMock.makerOrder(15, 13, 0, 0);
+            await hardhatMatchingEngineMock.makerOrder(15, 10, 0, 0);
+            await hardhatMatchingEngineMock.take(21, 1);
+            const bid0 = await hardhatMatchingEngineMock.bids(0);
+            const bid3 = await hardhatMatchingEngineMock.bids(3);
+
+            expect(
+              bid0.id.toString(),
+              bid0.prev.toString(),
+              bid0.next.toString()
+            ).to.equal('0', '3', '3');
+            expect(
+              bid3.id.toString(),
+              bid3.prev.toString(),
+              bid3.next.toString()
+            ).to.equal('3', '0', '0');
+          });
+        });
+      });
+
+      describe('Selling Token 02', function () {
+        describe('Only one ask with askAmount greater than token amount', function () {
+          it('should update ask order', async function () {
+            const { hardhatMatchingEngineMock } = await loadFixture(
+              deployMatchingEngineMockFixture
+            );
+            await hardhatMatchingEngineMock.makerOrder(15, 10, 1, 0);
+            const detailsInitial = await hardhatMatchingEngineMock.orders(2);
+            await hardhatMatchingEngineMock.take(2, 0);
+            const detailsFinal = await hardhatMatchingEngineMock.orders(2);
+            expect(detailsFinal.sellingTokenAmt).to.equal(
+              detailsInitial.sellingTokenAmt - 2
+            );
+          });
+
+          it('should not delete ask dll', async function () {
+            const { hardhatMatchingEngineMock } = await loadFixture(
+              deployMatchingEngineMockFixture
+            );
+            await hardhatMatchingEngineMock.makerOrder(15, 10, 1, 0);
+            await hardhatMatchingEngineMock.take(2, 0);
+            const ask = await hardhatMatchingEngineMock.asks(2);
+            expect(
+              ask.id.toString(),
+              ask.prev.toString(),
+              ask.next.toString()
+            ).to.not.equal('0', '0', '0');
+          });
+
+          it('should not update ask dll', async function () {
+            const { hardhatMatchingEngineMock } = await loadFixture(
+              deployMatchingEngineMockFixture
+            );
+            await hardhatMatchingEngineMock.makerOrder(15, 10, 1, 0);
+            const askInital = await hardhatMatchingEngineMock.asks(2);
+            await hardhatMatchingEngineMock.take(2, 0);
+            const askFinal = await hardhatMatchingEngineMock.asks(2);
+            expect(...askInital).to.equal(...askFinal);
+          });
+        });
+
+        describe('Only one ask with askAmount equal to token amount', function () {
+          it('should delete ask order', async function () {
+            const { hardhatMatchingEngineMock } = await loadFixture(
+              deployMatchingEngineMockFixture
+            );
+            await hardhatMatchingEngineMock.makerOrder(15, 10, 1, 0);
+            await hardhatMatchingEngineMock.take(15, 0);
+            const details = await hardhatMatchingEngineMock.orders(2);
+            const detailsEmpty = await hardhatMatchingEngineMock.orders(0);
+            expect(...details).to.equal(...detailsEmpty);
+          });
+
+          it('should update ask dll', async function () {
+            const { hardhatMatchingEngineMock } = await loadFixture(
+              deployMatchingEngineMockFixture
+            );
+            await hardhatMatchingEngineMock.makerOrder(15, 10, 1, 0);
+            await hardhatMatchingEngineMock.take(15, 0);
+            const asks = await hardhatMatchingEngineMock.asks(0);
+            expect(
+              asks.id.toString(),
+              asks.prev.toString(),
+              asks.next.toString()
+            ).to.equal('0', '0', '0');
+          });
+
+          it('should delete from ask dll', async function () {
+            const { hardhatMatchingEngineMock } = await loadFixture(
+              deployMatchingEngineMockFixture
+            );
+            await hardhatMatchingEngineMock.makerOrder(15, 10, 1, 0);
+
+            await hardhatMatchingEngineMock.take(15, 0);
+
+            const asks = await hardhatMatchingEngineMock.asks(2);
+            expect(
+              asks.id.toString(),
+              asks.prev.toString(),
+              asks.next.toString()
+            ).to.equal('0', '0', '0');
+          });
+        });
+
+        describe('Only one ask with askAmount less than token amount', function () {
+          it('should delete ask order', async function () {
+            const { hardhatMatchingEngineMock } = await loadFixture(
+              deployMatchingEngineMockFixture
+            );
+            await hardhatMatchingEngineMock.makerOrder(15, 10, 1, 0);
+            await hardhatMatchingEngineMock.take(25, 0);
+            const details = await hardhatMatchingEngineMock.orders(2);
+            const detailsEmpty = await hardhatMatchingEngineMock.orders(0);
+            expect(...details).to.equal(...detailsEmpty);
+          });
+
+          it('should update ask dll', async function () {
+            const { hardhatMatchingEngineMock } = await loadFixture(
+              deployMatchingEngineMockFixture
+            );
+            await hardhatMatchingEngineMock.makerOrder(15, 10, 1, 0);
+            await hardhatMatchingEngineMock.take(25, 0);
+            const asks = await hardhatMatchingEngineMock.asks(0);
+            expect(
+              asks.id.toString(),
+              asks.prev.toString(),
+              asks.next.toString()
+            ).to.equal('0', '0', '0');
+          });
+
+          it('should delete from ask dll', async function () {
+            const { hardhatMatchingEngineMock } = await loadFixture(
+              deployMatchingEngineMockFixture
+            );
+            await hardhatMatchingEngineMock.makerOrder(15, 10, 1, 0);
+
+            await hardhatMatchingEngineMock.take(25, 0);
+
+            const asks = await hardhatMatchingEngineMock.asks(2);
+            expect(
+              asks.id.toString(),
+              asks.prev.toString(),
+              asks.next.toString()
+            ).to.equal('0', '0', '0');
+          });
+        });
+
+        describe('Mutiple asks & order fullfiled by single ask (askAmount == tokenAmount)', function () {
+          it('should delete ask order', async function () {
+            const { hardhatMatchingEngineMock } = await loadFixture(
+              deployMatchingEngineMockFixture
+            );
+            await hardhatMatchingEngineMock.makerOrder(15, 13, 1, 0);
+            await hardhatMatchingEngineMock.makerOrder(15, 10, 1, 0);
+            await hardhatMatchingEngineMock.take(15, 0);
+            const details = await hardhatMatchingEngineMock.orders(3);
+            const detailsEmpty = await hardhatMatchingEngineMock.orders(0);
+            expect(...details).to.equal(...detailsEmpty);
+          });
+
+          it('should not change other ask orders', async function () {
+            const { hardhatMatchingEngineMock } = await loadFixture(
+              deployMatchingEngineMockFixture
+            );
+            await hardhatMatchingEngineMock.makerOrder(15, 13, 1, 0);
+            await hardhatMatchingEngineMock.makerOrder(15, 10, 1, 0);
+            const details1 = await hardhatMatchingEngineMock.orders(2);
+            await hardhatMatchingEngineMock.take(15, 0);
+            const details2 = await hardhatMatchingEngineMock.orders(2);
+            expect(...details1).to.equal(...details2);
+          });
+
+          it('should delete ask from ask dll', async function () {
+            const { hardhatMatchingEngineMock } = await loadFixture(
+              deployMatchingEngineMockFixture
+            );
+            await hardhatMatchingEngineMock.makerOrder(15, 13, 1, 0);
+            await hardhatMatchingEngineMock.makerOrder(15, 10, 1, 0);
+            await hardhatMatchingEngineMock.take(15, 0);
+            const asks = await hardhatMatchingEngineMock.asks(3);
+            expect(
+              asks.id.toString(),
+              asks.prev.toString(),
+              asks.next.toString()
+            ).to.equal('0', '0', '0');
+          });
+
+          it('should update ask dll', async function () {
+            const { hardhatMatchingEngineMock } = await loadFixture(
+              deployMatchingEngineMockFixture
+            );
+            await hardhatMatchingEngineMock.makerOrder(15, 13, 1, 0);
+            await hardhatMatchingEngineMock.makerOrder(15, 10, 1, 0);
+            await hardhatMatchingEngineMock.take(15, 0);
+            const ask0 = await hardhatMatchingEngineMock.asks(0);
+            const ask2 = await hardhatMatchingEngineMock.asks(2);
+            expect(
+              ask0.id.toString(),
+              ask0.prev.toString(),
+              ask0.next.toString()
+            ).to.equal('0', '2', '2');
+            expect(
+              ask2.id.toString(),
+              ask2.prev.toString(),
+              ask2.next.toString()
+            ).to.equal('2', '0', '0');
+          });
+        });
+
+        describe('Mutiple asks & order fullfiled by multiple ask', function () {
+          it('should delete compltely filled ask order', async function () {
+            const { hardhatMatchingEngineMock } = await loadFixture(
+              deployMatchingEngineMockFixture
+            );
+            await hardhatMatchingEngineMock.makerOrder(15, 13, 1, 0);
+            await hardhatMatchingEngineMock.makerOrder(15, 10, 1, 0);
+            await hardhatMatchingEngineMock.take(17, 0);
+            const details = await hardhatMatchingEngineMock.orders(3);
+            const detailsEmpty = await hardhatMatchingEngineMock.orders(0);
+            expect(...details).to.equal(...detailsEmpty);
+          });
+
+          it('should update partially filled ask orders', async function () {
+            const { hardhatMatchingEngineMock } = await loadFixture(
+              deployMatchingEngineMockFixture
+            );
+            await hardhatMatchingEngineMock.makerOrder(15, 13, 1, 0);
+            await hardhatMatchingEngineMock.makerOrder(15, 10, 1, 0);
+            const details1 = await hardhatMatchingEngineMock.orders(2);
+            await hardhatMatchingEngineMock.take(19, 0);
+            const details2 = await hardhatMatchingEngineMock.orders(2);
+            expect(details2.sellingTokenAmt).to.equal(
+              details1.sellingTokenAmt - 4
+            );
+          });
+
+          it('should delete ask from ask dll', async function () {
+            const { hardhatMatchingEngineMock } = await loadFixture(
+              deployMatchingEngineMockFixture
+            );
+            await hardhatMatchingEngineMock.makerOrder(15, 13, 1, 0);
+            await hardhatMatchingEngineMock.makerOrder(15, 10, 1, 0);
+            await hardhatMatchingEngineMock.take(19, 0);
+            const asks = await hardhatMatchingEngineMock.asks(3);
+            expect(
+              asks.id.toString(),
+              asks.prev.toString(),
+              asks.next.toString()
+            ).to.equal('0', '0', '0');
+          });
+
+          it('should update ask dll', async function () {
+            const { hardhatMatchingEngineMock } = await loadFixture(
+              deployMatchingEngineMockFixture
+            );
+            await hardhatMatchingEngineMock.makerOrder(15, 13, 1, 0);
+            await hardhatMatchingEngineMock.makerOrder(15, 10, 1, 0);
+            await hardhatMatchingEngineMock.take(19, 0);
+            const ask0 = await hardhatMatchingEngineMock.asks(0);
+            const ask2 = await hardhatMatchingEngineMock.asks(2);
+            expect(
+              ask0.id.toString(),
+              ask0.prev.toString(),
+              ask0.next.toString()
+            ).to.equal('0', '2', '2');
+            expect(
+              ask2.id.toString(),
+              ask2.prev.toString(),
+              ask2.next.toString()
+            ).to.equal('2', '0', '0');
+          });
+        });
+      });
+
+      describe('Emits', function () {
+        it('should emit TakerOrder event', async function () {
+          const { hardhatMatchingEngineMock } = await loadFixture(
+            deployMatchingEngineMockFixture
+          );
+          await hardhatMatchingEngineMock.makerOrder(15, 10, 1, 0);
+          await expect(hardhatMatchingEngineMock.take(25, 0))
+            .to.emit(hardhatMatchingEngineMock, 'TakerOrder')
+            .withArgs(10, 0);
+        });
+      });
     });
   });
 });
+
+// for (let id = 0; id < 5; id++) {
+//   const r = await hardhatMatchingEngineMock.asks(id);
+//   console.log(r.id.toString(), r.prev.toString(), r.next.toString());
+// }
+
+// 0 2 3
+// 0 0 0
+// 2 3 0
+// 3 0 2
+// 0 0 0
+// 0 3 3
+// 0 0 0
+// 0 0 0
+// 3 0 0
+// 0 0 0

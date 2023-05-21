@@ -4,12 +4,12 @@ pragma solidity ^0.8.18;
 /// @title Events for MatchingEngine.sol
 /// @author Nolan D. Amblard
 contract EventfulMatchingEngine {
+    /// @notice Emitted when a taker order is executed.
+    event TakerOrder(uint128 tokenAmt, uint8 spendingToken1);
+
     /// @notice Emitted when a maker order is created.
     /// @dev position == 0 is back of DLL, position == 1 is front
     event MakerOrderCreated(uint256 indexed id, uint256 indexed position);
-
-    /// @notice Emitted when a taker order is executed.
-    event TakerOrder(uint128 tokenAmt, uint8 spendingToken1);
 
     /// @notice Emitted when an immediate or cancel order is executed.
     /// @dev Token amounts are the amounts actually used in the order

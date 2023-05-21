@@ -742,71 +742,83 @@ contract MatchingEngine is
         }
     }
 
-    // /// @notice Executes a taker order for the amount specified
-    // /// @dev tokenAmt is the amount of the spending token
-    // function take(
-    //     uint128 tokenAmt,
-    //     uint8 spendingToken1
-    // ) external nonReentrant {
-    //     if (spendingToken1 == 1) {
-    //         // Using token1 to buy token2; search through bids
-    //         Node memory curr = bids[bids[0].next];
-    //         while (
-    //             curr.id != 0 && // If curr.id is 0, then we have gone through all the asks
-    //             tokenAmt != 0
-    //         ) {
-    //             uint128 buyAmt = tokenAmt < orders[curr.id].buyingTokenAmt
-    //                 ? tokenAmt
-    //                 : orders[curr.id].buyingTokenAmt;
-    //             if (_buy(curr.id, buyAmt)) {
-    //                 // If the order was completely filled, remove it from dll and delete it from array
-    //                 bids[bids[curr.id].next].prev = bids[curr.id].prev;
-    //                 bids[bids[curr.id].prev].next = bids[curr.id].next;
-    //                 delete bids[curr.id];
-    //             }
-    //             tokenAmt -= buyAmt;
-    //             // Get next best bid
-    //             curr = bids[curr.next];
-    //         }
-    //     } else {
-    //         // Using token2 to buy token1; Search through asks
-    //         Node memory curr = asks[asks[0].next];
-    //         while (
-    //             curr.id != 0 && // If curr.id is 0, then we have gone through all the asks
-    //             tokenAmt != 0
-    //         ) {
-    //             uint128 buyAmt = tokenAmt < orders[curr.id].buyingTokenAmt
-    //                 ? tokenAmt
-    //                 : orders[curr.id].buyingTokenAmt;
-    //             if (_buy(curr.id, buyAmt)) {
-    //                 // If the order was completely filled, remove it from dll and delete it from array
-    //                 asks[asks[curr.id].next].prev = asks[curr.id].prev;
-    //                 asks[asks[curr.id].prev].next = asks[curr.id].next;
-    //                 delete asks[curr.id];
-    //             }
-    //             tokenAmt -= buyAmt;
-    //             // Get next best bid
-    //             curr = asks[curr.next];
-    //         }
-    //     }
+    /// @notice Executes a taker order for the amount specified
+    /// @dev tokenAmt is the amount of the spending token
+    function take(
+        uint128 tokenAmt,
+        uint8 spendingToken1
+    ) external nonReentrant {
+        if (spendingToken1 == 1) {
+            // Using token1 to buy token2; search through bids
+            Node memory curr = bids[bids[0].next];
+            while (
+                curr.id != 0 && // If curr.id is 0, then we have gone through all the asks
+                tokenAmt != 0
+            ) {
+                uint128 buyAmt = tokenAmt < orders[curr.id].sellingTokenAmt
+                    ? tokenAmt
+                    : orders[curr.id].sellingTokenAmt;
 
-    //     emit TakerOrder(tokenAmt, spendingToken1);
-    // }
+                //*** Update ***/
+                // uint128 buyAmt = tokenAmt < orders[curr.id].buyingTokenAmt
+                //     ? tokenAmt
+                //     : orders[curr.id].buyingTokenAmt;
 
-    // /// @notice Public entrypoint for canceling an order
-    // /// @dev Removes the order from its respective DLL
-    // function cancelOrder(uint256 id) external nonReentrant {
-    //     if (_cancel(id) == 1) {
-    //         // sellingToken1 == 1; remove from asks
-    //         asks[asks[id].next].prev = asks[id].prev;
-    //         asks[asks[id].prev].next = asks[id].next;
-    //         delete asks[id];
-    //     } else {
-    //         bids[bids[id].next].prev = bids[id].prev;
-    //         bids[bids[id].prev].next = bids[id].next;
-    //         delete bids[id];
-    //     }
-    // }
+                if (_buy(curr.id, buyAmt)) {
+                    // If the order was completely filled, remove it from dll and delete it from array
+                    bids[bids[curr.id].next].prev = bids[curr.id].prev;
+                    bids[bids[curr.id].prev].next = bids[curr.id].next;
+                    delete bids[curr.id];
+                }
+                tokenAmt -= buyAmt;
+                // Get next best bid
+                curr = bids[curr.next];
+            }
+        } else {
+            // Using token2 to buy token1; Search through asks
+            Node memory curr = asks[asks[0].next];
+            while (
+                curr.id != 0 && // If curr.id is 0, then we have gone through all the asks
+                tokenAmt != 0
+            ) {
+                uint128 buyAmt = tokenAmt < orders[curr.id].sellingTokenAmt
+                    ? tokenAmt
+                    : orders[curr.id].sellingTokenAmt;
+
+                //*** Update ***/
+                // uint128 buyAmt = tokenAmt < orders[curr.id].buyingTokenAmt
+                //     ? tokenAmt
+                //     : orders[curr.id].buyingTokenAmt;
+
+                if (_buy(curr.id, buyAmt)) {
+                    // If the order was completely filled, remove it from dll and delete it from array
+                    asks[asks[curr.id].next].prev = asks[curr.id].prev;
+                    asks[asks[curr.id].prev].next = asks[curr.id].next;
+                    delete asks[curr.id];
+                }
+                tokenAmt -= buyAmt;
+                // Get next best bid
+                curr = asks[curr.next];
+            }
+        }
+
+        emit TakerOrder(tokenAmt, spendingToken1);
+    }
+
+    /// @notice Public entrypoint for canceling an order
+    /// @dev Removes the order from its respective DLL
+    function cancelOrder(uint256 id) external nonReentrant {
+        if (_cancel(id) == 1) {
+            // sellingToken1 == 1; remove from asks
+            asks[asks[id].next].prev = asks[id].prev;
+            asks[asks[id].prev].next = asks[id].next;
+            delete asks[id];
+        } else {
+            bids[bids[id].next].prev = bids[id].prev;
+            bids[bids[id].prev].next = bids[id].next;
+            delete bids[id];
+        }
+    }
 
     // /// @notice Executes an immediate or cancel (IoC) order for the amount specified for less than the price specified
     // /// @notice IoC orders can execute partial fills
