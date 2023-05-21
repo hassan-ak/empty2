@@ -167,6 +167,7 @@ contract OrderBook is EventfulOrderbook, OrderbookErrors, Ownable {
         if (quantity == 0) revert ZeroBuyQuantity();
 
         MakeOrder memory _makeOrder = orders[id]; // Consider not using this to save gas??
+
         if (quantity > _makeOrder.sellingTokenAmt)
             revert QuantityExceedsOrderAmount();
 
